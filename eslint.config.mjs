@@ -15,7 +15,7 @@ export default [
       "prefer-const": ["error", { ignoreReadBeforeAssign: true }],
       'semi': ['error', 'always'],
       'no-console': ['error', { allow: ['warn', 'error'] }],
-      'linebreak-style': ['error', 'unix']
+      'linebreak-style': ['error', 'windows']
     },
   },
 ];
