@@ -1,23 +1,24 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import prisma from "../utils/prisma";
 import UserUsecase from "../use_case/user_usecase";
-import IUser from "../model/user_interface";
+import { UserRequest } from "../model/user_model";
+import { HttpException } from "../utils/exception";
 
 const userUsecase:UserUsecase = new UserUsecase(prisma);
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const user:IUser = {
+      const user: UserRequest = {
         username: req.body.username,
         password: req.body.password,
         roleId: req.body.roleId
       };
-      const newUser = await userUsecase.createUser(user);
-      if (newUser.data == null) {
-        return res.status(400).json(newUser);
+      if (!user.roleId) {
+        throw new HttpException(404,'Validation Error');
       }
-      return res.json(newUser);
+      const newUser = await userUsecase.createUser(user);
+      res.json(newUser);
     } catch (error) {
-      res.status(400).json({ error: error + 'Unable to create user' });
+      next(error);
     }
 };
 
