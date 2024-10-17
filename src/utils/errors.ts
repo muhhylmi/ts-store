@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from './exception';
 import logger from './logger';
+import { responseError } from './wrapper';
 
 const errorHandler = (
   err: HttpException,
@@ -12,10 +13,7 @@ const errorHandler = (
   const message = err.message || 'Something went wrong';
 
   logger.error(message);
-  res.status(status).json({
-    status,
-    message,
-  });
+  responseError(res, status, message);
   next();
 };
 

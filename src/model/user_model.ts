@@ -3,3 +3,9 @@ export interface UserRequest {
     password: string;
     roleId: number;
 }
+
+export interface UserModel {
+    username: string;
+    password: string;
+    roleId: number;
+}

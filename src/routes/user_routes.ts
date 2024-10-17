@@ -1,8 +1,9 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
-import { createUser, getUser } from '../handler/user_handler';
+import { createUser, getUser, getUserById } from '../handler/user_handler';
 
 const userRouter = Router();
+
 
 userRouter.post('/', createUser);
 
@@ -25,5 +26,6 @@ userRouter.post('/', createUser);
  *                   example: user44
  */
 userRouter.get('', getUser);
+userRouter.get('/:id', getUserById);
 
 export default userRouter;
