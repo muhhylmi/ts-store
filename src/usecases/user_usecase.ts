@@ -41,6 +41,13 @@ class UserUsecase implements IUserUsecase {
         }
         return user;
     }
+
+    async deleteUser(id: number) {
+        const user = await this.getUserById(id);
+        if (user) {
+            return this.repository.deleteUser(id);
+        }
+    }
 }
 
 

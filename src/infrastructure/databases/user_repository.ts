@@ -13,18 +13,29 @@ class UserRepo implements IUserRepo {
         });
         return newUser;
     }
-    async deleteUser(){
-
+    async deleteUser(id: number){
+        return prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                is_deleted: true
+            }
+        });
     }
 
     async getUser():Promise<object>{
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            where: {
+                is_deleted: false
+            }
+        });
         return users;
     }
 
     async findOne(query: object): Promise<object|null> {
         const user = await prisma.user.findFirst({
-            where: query
+            where: { ...query, is_deleted: false }
         });
         return user;
     }

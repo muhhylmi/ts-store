@@ -5,5 +5,6 @@ export default interface IUserUsecase {
     createUser: (user: UserRequest) => void;
     getUser: () => Promise<object>;
     getUserById: (id: number) => Promise<object | null>;
+    deleteUser: (id: number) => void;
 // eslint-disable-next-line semi
 }

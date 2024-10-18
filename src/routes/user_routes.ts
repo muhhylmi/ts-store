@@ -36,5 +36,6 @@ userRouter.post('/', (req, res, next) => userHandler.createUser(req, res, next))
  */
 userRouter.get('', (req, res) => userHandler.getUser(req, res));
 userRouter.get('/:id', (req, res, next) => userHandler.getUserById(req, res, next));
+userRouter.delete('/:id', (req, res, next) => userHandler.deleteUser(req, res, next));
 
 export default userRouter;

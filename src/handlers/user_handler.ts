@@ -43,6 +43,17 @@ async getUserById (req: Request, res: Response, next: NextFunction) {
   } catch (error) {
     next(error);
   }};
+
+  async deleteUser (req: Request, res: Response, next: NextFunction) {
+    try {
+      const id: number = Number(req.params.id);
+      const user = await this.userUsecase.deleteUser(id);
+      responseSuccess(res, 200, 'Hooray Request successfully created', user);
+    } catch (error) {
+      next(error);
+    }};
 }
+
+
 
 
