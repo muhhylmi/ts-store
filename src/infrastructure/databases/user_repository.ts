@@ -1,14 +1,10 @@
-import { UserModel } from "../model/user_model";
-import IUserRepo from "./user_repo_int";
-import { PrismaClient } from "@prisma/client";
+import { UserModel } from "../../domain/model/user_model";
+import IUserRepo from "../../domain/repositories/user_repo_int";
+import prisma from "../../utils/prisma";
 
 class UserRepo implements IUserRepo {
-    readonly prisma: PrismaClient;
-    constructor(prisma: PrismaClient) {
-       this.prisma = prisma;
-    }
     async createUser(user: UserModel) {
-        const newUser =  await this.prisma.user.create({
+        const newUser =  await prisma.user.create({
             data: {
                 username: user.username,
                 roleId: user.roleId,
@@ -22,12 +18,12 @@ class UserRepo implements IUserRepo {
     }
 
     async getUser():Promise<object>{
-        const users = await this.prisma.user.findMany();
+        const users = await prisma.user.findMany();
         return users;
     }
 
     async findOne(query: object): Promise<object|null> {
-        const user = await this.prisma.user.findFirst({
+        const user = await prisma.user.findFirst({
             where: query
         });
         return user;

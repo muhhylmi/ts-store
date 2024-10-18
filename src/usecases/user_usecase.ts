@@ -1,5 +1,5 @@
-import { UserModel, UserRequest } from "../model/user_model";
-import IUserRepo from "../repositories/user_repo_int";
+import { UserModel, UserRequest } from "../domain/model/user_model";
+import IUserRepo from "../domain/repositories/user_repo_int";
 import { HttpException } from "../utils/exception";
 import logger from "../utils/logger";
 import IUserUsecase from "./user_usercase_int";

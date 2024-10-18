@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { UserRequest } from "../model/user_model";
+import { UserRequest } from "../domain/model/user_model";
 
 export default interface IUserUsecase {
     createUser: (user: UserRequest) => void;

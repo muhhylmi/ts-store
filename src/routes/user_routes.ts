@@ -1,14 +1,14 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
-import { UserHandler } from '../handler/user_handler';
-import UserRepo from "../repositories/user_repo";
-import prisma from "../utils/prisma";
-import IUserRepo from "../repositories/user_repo_int";
-import UserUsecase from '../use_case/user_usecase';
+import { UserHandler } from '../handlers/user_handler';
+import IUserRepo from "../domain/repositories/user_repo_int";
+import UserUsecase from '../usecases/user_usecase';
+import UserRepo from '../infrastructure/databases/user_repository';
+import IUserUsecase from '../usecases/user_usercase_int';
 
 // Dependency Injection
-const repository: IUserRepo = new UserRepo(prisma);
-const userUsecase:UserUsecase = new UserUsecase(repository);
+const repository: IUserRepo = new UserRepo();
+const userUsecase:IUserUsecase = new UserUsecase(repository);
 const userHandler = new UserHandler(userUsecase);
 
 const userRouter = Router();

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest } from "../model/user_model";
+import { UserRequest } from "../domain/model/user_model";
 import { HttpException } from "../utils/exception";
 import { responseSuccess } from "../utils/wrapper";
-import IUserUsecase from "../use_case/user_usercase_int";
+import IUserUsecase from "../usecases/user_usercase_int";
 
 export class UserHandler {
   private userUsecase: IUserUsecase;

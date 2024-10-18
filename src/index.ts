@@ -1,10 +1,10 @@
 import express from 'express';
 import logger from './utils/logger';
 import errorHandler  from './utils/errors';
-import config from './infra/config';
+import config from './infrastructure/config';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerOptions from './swaggerOptions';
+import swaggerOptions from './utils/swagger_option';
 import router from './routes';
 
 const app = express();
