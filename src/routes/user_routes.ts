@@ -5,7 +5,7 @@ import IUserRepo from "../domain/repositories/user_repo_int";
 import UserUsecase from '../usecases/user_usecase';
 import UserRepo from '../infrastructure/databases/user_repository';
 import IUserUsecase from '../usecases/user_usercase_int';
-import { basicAuthMiddleware } from '../utils/middlewares';
+import { basicAuthMiddleware, jwtAuthMiddleware } from '../utils/middlewares';
 
 // Dependency Injection
 const repository: IUserRepo = new UserRepo();
@@ -35,7 +35,7 @@ userRouter.post('/', basicAuthMiddleware, (req, res, next) => userHandler.create
  *                   type: string
  *                   example: user44
  */
-userRouter.get('', (req, res) => userHandler.getUser(req, res));
+userRouter.get('', (req, res, next) => jwtAuthMiddleware(req, res, next, repository), (req, res) => userHandler.getUser(req, res));
 userRouter.get('/:id', (req, res, next) => userHandler.getUserById(req, res, next));
 userRouter.delete('/:id', (req, res, next) => userHandler.deleteUser(req, res, next));
 userRouter.post('/login', basicAuthMiddleware, (req, res, next) => userHandler.login(req, res, next));

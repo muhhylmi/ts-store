@@ -73,7 +73,7 @@ class UserUsecase implements IUserUsecase {
                 username: user.username,
                 userId: user.id,
                 roleId: user.roleId
-            }, config.JWTPRIVATEKEY);
+            }, config.JWTPRIVATEKEY, { expiresIn: '1h'});
     
             return {
                 accessToken: token,
