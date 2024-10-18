@@ -1,9 +1,9 @@
-import { UserModel } from "../../domain/model/user_model";
+import { UserModel, UserResponse } from "../../domain/model/user_model";
 import IUserRepo from "../../domain/repositories/user_repo_int";
 import prisma from "../../utils/prisma";
 
 class UserRepo implements IUserRepo {
-    async createUser(user: UserModel) {
+    async createUser(user: UserModel): Promise<UserResponse> {
         const newUser =  await prisma.user.create({
             data: {
                 username: user.username,
@@ -11,7 +11,12 @@ class UserRepo implements IUserRepo {
                 password: user.password
             }
         });
-        return newUser;
+        return {
+            id: newUser.id,
+            username: newUser.username,
+            roleId: newUser.roleId,
+            created_at: newUser.createdAt
+        };
     }
     async deleteUser(id: number){
         return prisma.user.update({
@@ -33,11 +38,21 @@ class UserRepo implements IUserRepo {
         return users;
     }
 
-    async findOne(query: object): Promise<object|null> {
+    async findOne(query: object): Promise<UserResponse|null> {
         const user = await prisma.user.findFirst({
             where: { ...query, is_deleted: false }
         });
-        return user;
+        if (!user) {
+            return null;
+        }
+        return {
+            id: user.id,
+            username: user.username,
+            roleId: user.roleId,
+            password: user.password,
+            is_deleted: user.is_deleted,
+            created_at: user.createdAt
+        };
     }
 
 }

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { UserRequest } from "../domain/model/user_model";
+import { LoginRequest, UserRequest } from "../domain/model/user_model";
 import { HttpException } from "../utils/exception";
 import { responseSuccess } from "../utils/wrapper";
 import IUserUsecase from "../usecases/user_usercase_int";
@@ -52,6 +52,18 @@ async getUserById (req: Request, res: Response, next: NextFunction) {
     } catch (error) {
       next(error);
     }};
+
+    async login (req: Request, res: Response, next: NextFunction) {
+      try {
+        const user: LoginRequest = {
+          username: req.body.username,
+          password: req.body.password
+        };
+        const data = await this.userUsecase.login(user);
+        responseSuccess(res, 200, 'Hooray Request successfully created', data);
+      } catch (error) {
+        next(error);
+      }};
 }
 
 
