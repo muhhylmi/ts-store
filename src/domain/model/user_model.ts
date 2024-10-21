@@ -32,5 +32,5 @@ export const createUserSchema = z.object({
 });
 
 export const getUserSchema = z.object({
-    id: z.string().regex(/^\d+$/, "Id must be a number")
+  id: z.string().regex(/^\d+$/, "Id must be a number")
 });

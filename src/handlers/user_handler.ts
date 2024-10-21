@@ -24,21 +24,21 @@ export class UserHandler {
     } catch (error) {
       next(error);
     }
-};
+  };
 
-async getUser(req: Request, res: Response) {
-  const users = await this.userUsecase.getUser();
-  responseSuccess(res, 200, 'Horray request succesfully created', users);
-};
+  async getUser(req: Request, res: Response) {
+    const users = await this.userUsecase.getUser();
+    responseSuccess(res, 200, 'Horray request succesfully created', users);
+  };
 
-async getUserById (req: Request, res: Response, next: NextFunction) {
-  try {
-    const id: number = Number(req.params.id);
-    const user = await this.userUsecase.getUserById(id);
-    responseSuccess(res, 200, 'Hooray Request successfully created', user);
-  } catch (error) {
-    next(error);
-  }};
+  async getUserById (req: Request, res: Response, next: NextFunction) {
+    try {
+      const id: number = Number(req.params.id);
+      const user = await this.userUsecase.getUserById(id);
+      responseSuccess(res, 200, 'Hooray Request successfully created', user);
+    } catch (error) {
+      next(error);
+    }};
 
   async deleteUser (req: Request, res: Response, next: NextFunction) {
     try {
@@ -49,17 +49,17 @@ async getUserById (req: Request, res: Response, next: NextFunction) {
       next(error);
     }};
 
-    async login (req: Request, res: Response, next: NextFunction) {
-      try {
-        const user: LoginRequest = {
-          username: req.body.username,
-          password: req.body.password
-        };
-        const data = await this.userUsecase.login(user);
-        responseSuccess(res, 200, 'Hooray Request successfully created', data);
-      } catch (error) {
-        next(error);
-      }};
+  async login (req: Request, res: Response, next: NextFunction) {
+    try {
+      const user: LoginRequest = {
+        username: req.body.username,
+        password: req.body.password
+      };
+      const data = await this.userUsecase.login(user);
+      responseSuccess(res, 200, 'Hooray Request successfully created', data);
+    } catch (error) {
+      next(error);
+    }};
 }
 
 

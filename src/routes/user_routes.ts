@@ -16,9 +16,9 @@ const userHandler = new UserHandler(userUsecase);
 const userRouter = Router();
 
 userRouter.post('/', 
-    basicAuthMiddleware, 
-    validate(createUserSchema),
-    (req, res, next) => userHandler.createUser(req, res, next)
+  basicAuthMiddleware, 
+  validate(createUserSchema),
+  (req, res, next) => userHandler.createUser(req, res, next)
 );
 /**
  * @swagger
@@ -39,22 +39,22 @@ userRouter.post('/',
  *                   example: user44
  */
 userRouter.get('', 
-    (req, res, next) => jwtAuthMiddleware(req, res, next, repository),
-    (req, res) => userHandler.getUser(req, res)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, repository),
+  (req, res) => userHandler.getUser(req, res)
 );
 userRouter.get('/:id',
-    (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
-    validateParams(getUserSchema),
-    (req, res, next) => userHandler.getUserById(req, res, next)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
+  validateParams(getUserSchema),
+  (req, res, next) => userHandler.getUserById(req, res, next)
 );
 userRouter.delete('/:id',
-    (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
-    validateParams(getUserSchema),
-    (req, res, next) => userHandler.deleteUser(req, res, next)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
+  validateParams(getUserSchema),
+  (req, res, next) => userHandler.deleteUser(req, res, next)
 );
 userRouter.post('/login', 
-    basicAuthMiddleware, 
-    (req, res, next) => userHandler.login(req, res, next)
+  basicAuthMiddleware, 
+  (req, res, next) => userHandler.login(req, res, next)
 );
 
 

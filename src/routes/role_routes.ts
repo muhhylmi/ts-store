@@ -20,23 +20,23 @@ const userHandler = new RoleHandler(roleUsecase);
 const roleRouter = Router();
 
 roleRouter.post('/', 
-    basicAuthMiddleware, 
-    validate(createRoleSchema),
-    (req, res, next) => userHandler.createRole(req, res, next)
+  basicAuthMiddleware, 
+  validate(createRoleSchema),
+  (req, res, next) => userHandler.createRole(req, res, next)
 );
 roleRouter.get('', 
-    (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo),
-    (req, res) => userHandler.getRole(req, res)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo),
+  (req, res) => userHandler.getRole(req, res)
 );
 roleRouter.get('/:id',
-    (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
-    validateParams(getRoleSchema),
-    (req, res, next) => userHandler.getRoleById(req, res, next)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
+  validateParams(getRoleSchema),
+  (req, res, next) => userHandler.getRoleById(req, res, next)
 );
 roleRouter.delete('/:id',
-    (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
-    validateParams(getRoleSchema),
-    (req, res, next) => userHandler.deleteRole(req, res, next)
+  (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
+  validateParams(getRoleSchema),
+  (req, res, next) => userHandler.deleteRole(req, res, next)
 );
 
 export default roleRouter;

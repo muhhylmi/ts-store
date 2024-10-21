@@ -23,21 +23,21 @@ export class RoleHandler {
     } catch (error) {
       next(error);
     }
-};
+  };
 
-async getRole(req: Request, res: Response) {
-  const roles = await this.roleUsecase.getRole();
-  responseSuccess(res, 200, 'Horray request succesfully created', roles);
-};
+  async getRole(req: Request, res: Response) {
+    const roles = await this.roleUsecase.getRole();
+    responseSuccess(res, 200, 'Horray request succesfully created', roles);
+  };
 
-async getRoleById (req: Request, res: Response, next: NextFunction) {
-  try {
-    const id: number = Number(req.params.id);
-    const role = await this.roleUsecase.getRoleById(id);
-    responseSuccess(res, 200, 'Hooray Request successfully created', role);
-  } catch (error) {
-    next(error);
-  }};
+  async getRoleById (req: Request, res: Response, next: NextFunction) {
+    try {
+      const id: number = Number(req.params.id);
+      const role = await this.roleUsecase.getRoleById(id);
+      responseSuccess(res, 200, 'Hooray Request successfully created', role);
+    } catch (error) {
+      next(error);
+    }};
 
   async deleteRole (req: Request, res: Response, next: NextFunction) {
     try {

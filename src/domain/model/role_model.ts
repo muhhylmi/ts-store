@@ -28,5 +28,5 @@ export const createRoleSchema = z.object({
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
 
 export const getRoleSchema = z.object({
-    id: z.string().regex(/^\d+$/, "Id must be a number")
+  id: z.string().regex(/^\d+$/, "Id must be a number")
 });

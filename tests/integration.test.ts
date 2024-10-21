@@ -1,9 +1,17 @@
 import request from 'supertest';
 import express from 'express';
-import { createUser, getUser } from '../src/handler/user_handler';
 import { PrismaClient } from '@prisma/client';
+import { UserHandler } from '../src/handlers/user_handler';
+import UserRepo  from '../src/infrastructure/databases/user_repository';
+import IUserRepo  from '../src/domain/repositories/user_repo_int';
+import UserUsecase  from '../src/usecases/user_usecase';
+import IUserUsecase  from '../src/usecases/user_usercase_int';
 
 const prisma = new PrismaClient();
+
+const userRepo: IUserRepo = new UserRepo();
+const userUsecase: IUserUsecase = new UserUsecase(userRepo);
+const userHandler = new UserHandler(userUsecase);
 
 beforeAll(async () => {
   await prisma.user.deleteMany({
@@ -19,8 +27,8 @@ afterAll(async () => {
 
 const app = express();
 app.use(express.json());
-app.post('/users', createUser);
-app.get('/users', getUser);
+app.post('/users', userHandler.createUser);
+app.get('/users', userHandler.getUser);
 
 jest.mock('../src/utils/logger'); // Mock logger supaya tidak perlu logging saat test dijalankan
 
