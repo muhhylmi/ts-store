@@ -55,8 +55,32 @@ export const validate = (schema: AnyZodObject) => (req: Request, res: Response, 
     next(); 
   } catch (error) {
     if (error instanceof ZodError) {
-      return responseError(res, 400, error.errors.map(e => e.message));
+      return responseError(res, 400, error.errors.map(e => e.path + e.message));
     }
     next(error);
   }
+};
+
+export const validateParams = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req.params);
+      next(); 
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return responseError(res, 400, error.errors.map(e => e.path + e.message));
+      }
+      next(error);
+    }
+};
+
+export const validateQueries = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
+    try {
+      schema.parse(req.query);
+      next(); 
+    } catch (error) {
+      if (error instanceof ZodError) {
+        return responseError(res, 400, error.errors.map(e => e.path + e.message));
+      }
+      next(error);
+    }
 };

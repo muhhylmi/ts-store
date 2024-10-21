@@ -30,3 +30,7 @@ export const createUserSchema = z.object({
   password: z.string().min(5, "Password must be at least 6 characters long"),
   roleId: z.number().min(1, "RoleId is invalid"),
 });
+
+export const getUserSchema = z.object({
+    id: z.string().regex(/^\d+$/, "Id must be a number")
+});
