@@ -1,5 +1,6 @@
 import { RoleModel, RoleResponse } from "../../domain/model/role_model";
 import IRoleRepo from "../../domain/repositories/role_repo_int";
+import { HttpException } from "../../utils/exception";
 import prisma from "../../utils/prisma";
 
 class RoleRepo implements IRoleRepo {
@@ -19,7 +20,7 @@ class RoleRepo implements IRoleRepo {
     };
   }
   async deleteRole(id: number){
-    return prisma.role.update({
+    const update = prisma.role.update({
       where: {
         id: id,
       },
@@ -27,6 +28,11 @@ class RoleRepo implements IRoleRepo {
         is_deleted: true
       }
     });
+    if (!update) {
+      throw new HttpException(409, 'Cannot update role');
+    }
+
+    return true;
   }
 
   async getRole():Promise<object>{
