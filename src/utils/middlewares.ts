@@ -4,7 +4,8 @@ import { HttpException } from "./exception";
 import jwt from 'jsonwebtoken';
 import { JwtPayload } from "../domain/model/jwt_payload";
 import IUserRepo from "../domain/repositories/user_repo_int";
-
+import { AnyZodObject, ZodError } from 'zod';
+import { responseError } from "./wrapper";
 
 export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers['authorization'] || '';
@@ -45,4 +46,17 @@ export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunctio
     } catch (error) {
         next(error);
     }
+};
+
+
+export const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
+  try {
+    schema.parse(req.body);
+    next(); 
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return responseError(res, 400, error.errors.map(e => e.message));
+    }
+    next(error);
+  }
 };

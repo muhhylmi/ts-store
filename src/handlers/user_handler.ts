@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { LoginRequest, UserRequest } from "../domain/model/user_model";
-import { HttpException } from "../utils/exception";
 import { responseSuccess } from "../utils/wrapper";
 import IUserUsecase from "../usecases/user_usercase_int";
 
@@ -20,9 +19,6 @@ export class UserHandler {
         password: req.body.password,
         roleId: req.body.roleId
       };
-      if (!user.roleId) {
-        throw new HttpException(404,'Validation Error');
-      }
       const newUser = await this.userUsecase.createUser(user);
       responseSuccess(res, 201, "Horray user success created", newUser);
     } catch (error) {
