@@ -55,7 +55,7 @@ export const validate = (schema: AnyZodObject) => (req: Request, res: Response, 
     next(); 
   } catch (error) {
     if (error instanceof ZodError) {
-      return responseError(res, 400, error.errors.map(e => e.path + e.message));
+      return responseError(res, 400, error.errors.map(e => e.path + " " + e.message));
     }
     next(error);
   }
@@ -67,7 +67,7 @@ export const validateParams = (schema: AnyZodObject) => (req: Request, res: Resp
     next(); 
   } catch (error) {
     if (error instanceof ZodError) {
-      return responseError(res, 400, error.errors.map(e => e.path + e.message));
+      return responseError(res, 400, error.errors.map(e => e.path + " " + e.message));
     }
     next(error);
   }
@@ -79,7 +79,7 @@ export const validateQueries = (schema: AnyZodObject) => (req: Request, res: Res
     next(); 
   } catch (error) {
     if (error instanceof ZodError) {
-      return responseError(res, 400, error.errors.map(e => e.path + e.message));
+      return responseError(res, 400, error.errors.map(e => e.path + " " + e.message));
     }
     next(error);
   }

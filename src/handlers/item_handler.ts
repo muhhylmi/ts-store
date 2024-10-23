@@ -19,7 +19,7 @@ export class ItemHandler {
         price: req.body.price
       };
       const newItem = await this.itemUsecasee.createItem(item);
-      responseSuccess(res, 201, "Horray role success created", newItem);
+      responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);
     }
