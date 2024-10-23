@@ -47,7 +47,7 @@ model Item {
   is_deleted Boolean @default(false)
   createdAt DateTime @default(now())
 
-  cartItem CartItem[]
+  cart Cart[]
 
   @@map("items")
 }
@@ -56,26 +56,14 @@ model Cart {
   id Int @id @default(autoincrement())
   status String
   user_id Int
-  
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
-  cartItem CartItem[]
-
-  @@map("carts")
-}
-
-model CartItem {
-  id Int @id @default(autoincrement())
   item_id Int
-  cart_id Int
+  count Int
+
   
   is_deleted Boolean @default(false)
   createdAt DateTime @default(now())
 
   item Item @relation(fields: [item_id], references: [id])
-  cart Cart @relation(fields: [cart_id], references: [id])
-
-  @@map("cart_items")
+  user User @relation(fields: [user_id], references: [id])
+  @@map("carts")
 }
