@@ -4,7 +4,7 @@ import { CartModel, CartResponse } from "../model/cart_model";
 interface ICartRepo {
     addCart: (role: CartModel) => Promise<CartResponse>;
     deleteCart: (id: number) => Promise<boolean>;
-    getCart: () => Promise<CartResponse[]>;
+    getCart: (query: unknown) => Promise<CartResponse[]>;
     findOne: (param:object) => Promise<CartResponse|null>;
     updateOne: (id: number, data: CartModel) => Promise<CartResponse|null> 
 }

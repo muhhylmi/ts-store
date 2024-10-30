@@ -37,13 +37,13 @@ class CartRepo implements ICartRepo {
     return true;
   }
 
-  async getCart():Promise<CartResponse[]>{
+  async getCart(query: unknown):Promise<CartResponse[]>{
     const carts = await prisma.cart.findMany({
       include: {
         item: true
       },
       where: {
-        is_deleted: false
+        ...query as object, is_deleted: false
       }
     });
     return carts.map((cart) => ({

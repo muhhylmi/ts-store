@@ -8,14 +8,17 @@ import CartRepo from '../infrastructure/databases/cart_repository';
 import ICartUsecase from '../usecases/cart_usecase_int';
 import CartUsecase from '../usecases/cart_usecase';
 import { CartHanlder } from '../handlers/cart_handler';
-import { createCartSchema, newUpdateCartSchema } from '../domain/model/cart_model';
+import { chargeSchema, createCartSchema, newUpdateCartSchema } from '../domain/model/cart_model';
 import { getItemSchema } from '../domain/model/item_model';
+import IPaymentRepo from '../domain/repositories/payment_int';
+import { Midtrans } from '../infrastructure/payments/midtrans';
 
 // Dependency Injection
 
 const repository: ICartRepo = new CartRepo();
 const userRepo: IUserRepo = new UserRepo();
-const cartUsecase:ICartUsecase = new CartUsecase(repository);
+const payment: IPaymentRepo = new Midtrans();
+const cartUsecase:ICartUsecase = new CartUsecase(repository, payment);
 const cartHanlder = new CartHanlder(cartUsecase);
 
 const cartRouter = Router();
@@ -43,6 +46,11 @@ cartRouter.delete('/:id',
   (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
   validateParams(getItemSchema),
   (req, res, next) => cartHanlder.deleteCart(req, res, next)
+);
+cartRouter.post('/charge',
+  (req, res, next) => jwtAuthMiddleware(req, res, next, userRepo), 
+  validate(chargeSchema),
+  (req, res, next) => cartHanlder.charge(req, res, next)
 );
 
 export default cartRouter;

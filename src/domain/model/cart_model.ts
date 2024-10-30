@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ItemModel } from './item_model';
 
 export interface CartResponse {
     id: number;
@@ -15,6 +16,12 @@ export interface CartModel {
     userId: number; 
     price?: number;
     cartId?: number;
+}
+
+export interface ChargeResponse {
+    status: string;
+    itemDetails: Partial<ItemModel>[];
+    totalPrice: number;
 }
 
 export const createCartSchema = z.object({
@@ -34,6 +41,12 @@ export const getCartSchema = z.object({
 export type UpdateCartInput = z.infer<typeof updateCartSchema> & {
     cartId: number;
 };
+
+export const chargeSchema = z.object({
+  cartIds: z.array(z.number()).min(1),
+  bank: z.enum(['bca'])
+});
+export type ChargeInput = z.infer<typeof chargeSchema>
 
 export const newUpdateCartSchema = z.object({
   params: getCartSchema,

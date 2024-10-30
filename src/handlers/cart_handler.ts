@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { responseSuccess } from "../utils/wrapper";
 import ICartUsecase from "../usecases/cart_usecase_int";
-import { CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
+import { ChargeInput, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
 import { UserModel } from "../domain/model/user_model";
 
 export class CartHanlder {
@@ -76,6 +76,20 @@ export class CartHanlder {
     } catch (error) {
       next(error);
     }};
+
+  async charge (req: Request, res: Response, next: NextFunction) {
+    try {
+      const item: ChargeInput = {
+        cartIds: req.body.cartIds,
+        bank: req.body.bank,
+      };
+      const newItem = await this.cartUsecase.cartCharge(item);
+      responseSuccess(res, 201, "Horray request success created", newItem);
+    } catch (error) {
+      next(error);
+    }
+  };
+    
 }
 
 

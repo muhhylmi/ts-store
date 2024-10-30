@@ -1,14 +1,18 @@
-import { CartModel, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
+import { CartModel, ChargeInput, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
+import { ChargeResponse, TransactionDetail } from "../domain/model/midtrans_model";
 import { UserModel } from "../domain/model/user_model";
 import ICartRepo from "../domain/repositories/cart_repo_int";
+import IPaymentRepo from "../domain/repositories/payment_int";
 import { HttpException } from "../utils/exception";
 import ICartUsecase from "./cart_usecase_int";
 
 
 class CartUsecase implements ICartUsecase {
   private readonly repository: ICartRepo;
-  constructor(repository: ICartRepo) {
+  private readonly payment: IPaymentRepo;
+  constructor(repository: ICartRepo, payment: IPaymentRepo) {
     this.repository = repository;
+    this.payment = payment;
   }
 
   async createCart(item: CreateCartInput, user: UserModel){
@@ -49,7 +53,7 @@ class CartUsecase implements ICartUsecase {
   }
 
   async getCart(): Promise<object> {
-    const carts = await this.repository.getCart();
+    const carts = await this.repository.getCart({});
     return carts;
   }
 
@@ -71,6 +75,26 @@ class CartUsecase implements ICartUsecase {
     return this.repository.deleteCart(id);
 
   }
+
+
+  async cartCharge(carts: ChargeInput): Promise<ChargeResponse> {
+
+    const dataCarts = await this.repository.getCart({
+      id: {
+        in: carts.cartIds
+      }
+    });
+    const grossAmount = dataCarts.reduce((acc, item)=> {
+      return acc + (item.price as number * item.count);
+    },0);
+
+    const data: TransactionDetail = {
+      gross_amount: grossAmount,
+      order_id: new Date().toISOString()
+    };
+    return await this.payment.charge(carts.bank, data );
+  }
+
 }
 
 
