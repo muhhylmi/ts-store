@@ -7,25 +7,35 @@ import IUserRepo from "../domain/repositories/user_repo_int";
 import { AnyZodObject, ZodError } from 'zod';
 import { responseError } from "./wrapper";
 
-export const basicAuthMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'] || '';
+export const basicAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw next(new HttpException(400, "Invalid Token"));
+    }
 
-  const base64Credentials = authHeader.split(' ')[1];
-  const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
-  const [username, password] = credentials.split(':');
+    const base64Credentials = authHeader.split(' ')[1];
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const [username, password] = credentials.split(':');
 
-  if (username !== config.BASIC_AUTH_USERNAME) {
-    throw new HttpException(404, "Credentials is invalid");
+    if (username !== config.BASIC_AUTH_USERNAME) {
+      throw new HttpException(404, "Credentials is invalid");
+    }
+    if (password !== config.BASIC_AUTH_PASSWORD) {
+      throw new HttpException(404, "Credentials is invalid");
+    }
+    next();
+  } catch (error) {
+    next(error);
   }
-  if (password !== config.BASIC_AUTH_PASSWORD) {
-    throw new HttpException(404, "Credentials is invalid");
-  }
-  next();
 };
 
-export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunction, repo: IUserRepo) => {
+export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextFunction, repo: IUserRepo) => {
   try {
-    const authHeader = req.headers['authorization'] || '';
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw next(new HttpException(400, "Invalid Token"));
+    }
 
     const token = authHeader.split(' ')[1];
     const decode = jwt.verify(token, config.JWTPRIVATEKEY) as JwtPayload;
@@ -33,14 +43,14 @@ export const jwtAuthMiddleware = (req: Request, res: Response, next: NextFunctio
       throw next(new HttpException(400, "Invalid Token"));
     }
 
-    const user = repo.findOne({
+    const user = await repo.findOne({
       username: decode.username
     });
     if (!user) {
       throw new HttpException(400, "Invalid Token");
     }
 
-    req.body.users = user;
+    req.body.user = user;
 
     next();
   } catch (error) {
@@ -83,4 +93,26 @@ export const validateQueries = (schema: AnyZodObject) => (req: Request, res: Res
     }
     next(error);
   }
+};
+
+
+export const validateRequest = (schema: AnyZodObject) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const result = schema.safeParse(req);
+
+    if (!result.success) {
+      // Kirim response error jika validasi gagal
+      const errors = result.error.format();
+      return res.status(400).json({ message: errors, data: null });
+    }
+
+    // Assign nilai yang sudah divalidasi kembali ke req
+    req.params = result.data.params;
+    req.body = {
+      user: req.body.user,
+      ...result.data.body
+    };
+    
+    next();
+  };
 };

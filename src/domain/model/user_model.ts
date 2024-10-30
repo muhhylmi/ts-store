@@ -14,7 +14,9 @@ export interface UserModel {
     username: string;
     password: string;
     roleId: number;
+    id: number;
 }
+export type UserModelWithoutId = Omit<UserModel, "id">;
 
 export interface UserResponse {
     username?: string;

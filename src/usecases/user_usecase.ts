@@ -1,4 +1,4 @@
-import { LoginRequest, UserModel, UserRequest } from "../domain/model/user_model";
+import { LoginRequest, UserModelWithoutId, UserRequest } from "../domain/model/user_model";
 import IUserRepo from "../domain/repositories/user_repo_int";
 import config from "../infrastructure/config";
 import { HttpException } from "../utils/exception";
@@ -13,7 +13,7 @@ class UserUsecase implements IUserUsecase {
   }
 
   async createUser(user: UserRequest){
-    const input: UserModel = {
+    const input: UserModelWithoutId = {
       username: user.username,
       password: await bcrypt.hash(user.password, 10),
       roleId: user.roleId

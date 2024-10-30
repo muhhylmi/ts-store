@@ -1,9 +1,9 @@
-import { UserModel, UserResponse } from "../../domain/model/user_model";
+import { UserModelWithoutId, UserResponse } from "../../domain/model/user_model";
 import IUserRepo from "../../domain/repositories/user_repo_int";
 import prisma from "../../utils/prisma";
 
 class UserRepo implements IUserRepo {
-  async createUser(user: UserModel): Promise<UserResponse> {
+  async createUser(user: UserModelWithoutId): Promise<UserResponse> {
     const newUser =  await prisma.user.create({
       data: {
         username: user.username,
