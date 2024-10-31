@@ -2,14 +2,16 @@ import { LoginRequest, UserModelWithoutId, UserRequest } from "../domain/model/u
 import IUserRepo from "../domain/repositories/user_repo_int";
 import config from "../infrastructure/config";
 import { HttpException } from "../utils/exception";
-import logger from "../utils/logger";
 import IUserUsecase from "./user_usercase_int";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Logging } from "../utils/logger";
 class UserUsecase implements IUserUsecase {
   private readonly repository: IUserRepo;
-  constructor(repository: IUserRepo, ) {
+  private readonly logger: Logging;
+  constructor(repository: IUserRepo, logger: Logging) {
     this.repository = repository;
+    this.logger = logger;
   }
 
   async createUser(user: UserRequest){
@@ -22,7 +24,7 @@ class UserUsecase implements IUserUsecase {
       username: user.username
     });
     if (existUser) {
-      logger.error('Username already exists');
+      this.logger.logError('Username already exists');
       throw new HttpException(400,'Username already exists');
     }
     const newUser =  await this.repository.createUser(input);

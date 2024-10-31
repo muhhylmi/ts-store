@@ -8,16 +8,20 @@ import IPaymentRepo from "../domain/repositories/payment_int";
 import { paymentStatus } from "../utils/constant";
 import { HttpException } from "../utils/exception";
 import ICartUsecase from "./cart_usecase_int";
+import { Logging } from "../utils/logger";
 
 
 class CartUsecase implements ICartUsecase {
   private readonly repository: ICartRepo;
   private readonly payment: IPaymentRepo;
   private readonly orderRepo: IOrderRepo;
-  constructor(repository: ICartRepo, payment: IPaymentRepo, orderRepo: IOrderRepo) {
+  private readonly logger:  Logging;
+
+  constructor(repository: ICartRepo, payment: IPaymentRepo, orderRepo: IOrderRepo, logger: Logging) {
     this.repository = repository;
     this.payment = payment;
     this.orderRepo = orderRepo;
+    this.logger = logger;
   }
 
   async createCart(item: CreateCartInput, user: UserModel){
@@ -95,6 +99,7 @@ class CartUsecase implements ICartUsecase {
       status: paymentStatus.UNPAID
     });
     if (dataCarts.length === 0) {
+      this.logger.logError('carts is not found');
       throw new HttpException(404, 'carts is not found');
     }
     const itemDetails: ItemDetail[] = dataCarts.map((cart) => {

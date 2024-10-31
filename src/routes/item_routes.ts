@@ -9,12 +9,14 @@ import ItemRepo from '../infrastructure/databases/item_repository';
 import ItemUsecase from '../usecases/item_usecase';
 import IItemUsecase from '../usecases/item_usecase_int';
 import { ItemHandler } from '../handlers/item_handler';
+import { Logging } from '../utils/logger';
 
 // Dependency Injection
 
 const repository: IItemRepo = new ItemRepo();
 const userRepo: IUserRepo = new UserRepo();
-const itemUsecase:IItemUsecase = new ItemUsecase(repository);
+const logger: Logging = new Logging();
+const itemUsecase:IItemUsecase = new ItemUsecase(repository, logger);
 const itemHandler = new ItemHandler(itemUsecase);
 
 const itemRouter = Router();

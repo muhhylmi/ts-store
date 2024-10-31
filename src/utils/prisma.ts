@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
-import logger from "./logger";
+import { Logging } from "./logger";
+const logger = new Logging();
 
 const prisma = new PrismaClient({
   log: ['query', 'info', 'warn', 'error'],
@@ -9,7 +10,7 @@ prisma.$use(async (params, next) => {
   const result = await next(params);
   const endTime = Date.now();
   
-  logger.info(`Query ${params.model}.${params.action} took ${endTime - startTime}ms`);
+  logger.logInfo(`Query ${params.model}.${params.action} took ${endTime - startTime}ms`);
   
   return result;
 });

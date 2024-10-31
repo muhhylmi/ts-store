@@ -7,10 +7,12 @@ import UserRepo from '../infrastructure/databases/user_repository';
 import IUserUsecase from '../usecases/user_usercase_int';
 import { basicAuthMiddleware, jwtAuthMiddleware, validate, validateParams } from '../utils/middlewares';
 import { createUserSchema, getUserSchema } from '../domain/model/user_model';
+import { Logging } from '../utils/logger';
 
 // Dependency Injection
 const repository: IUserRepo = new UserRepo();
-const userUsecase:IUserUsecase = new UserUsecase(repository);
+const logger: Logging = new Logging();
+const userUsecase:IUserUsecase = new UserUsecase(repository, logger);
 const userHandler = new UserHandler(userUsecase);
 
 const userRouter = Router();

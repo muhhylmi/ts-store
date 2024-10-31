@@ -1,14 +1,16 @@
 import { CreateItemInput, ItemModel } from "../domain/model/item_model";
 import IItemRepo from "../domain/repositories/item_repo_int";
 import { HttpException } from "../utils/exception";
-import logger from "../utils/logger";
+import { Logging } from "../utils/logger";
 import IItemUsecase from "./item_usecase_int";
 
 
 class ItemUsecase implements IItemUsecase {
   private readonly repository: IItemRepo;
-  constructor(repository: IItemRepo) {
+  private readonly logger: Logging;
+  constructor(repository: IItemRepo, logger: Logging) {
     this.repository = repository;
+    this.logger = logger;
   }
 
   async createItem(item: CreateItemInput){
@@ -20,7 +22,7 @@ class ItemUsecase implements IItemUsecase {
       item_name: item.itemName
     });
     if (existRole) {
-      logger.error('item name already exists');
+      this.logger.logError('item name already exists');
       throw new HttpException(400,'item name already exists');
     }
     const newRole =  await this.repository.createItem(input);

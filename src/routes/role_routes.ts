@@ -9,12 +9,14 @@ import { basicAuthMiddleware, jwtAuthMiddleware, validate, validateParams } from
 import IUserRepo from '../domain/repositories/user_repo_int';
 import UserRepo from '../infrastructure/databases/user_repository';
 import { createRoleSchema, getRoleSchema } from '../domain/model/role_model';
+import { Logging } from '../utils/logger';
 
 // Dependency Injection
 
 const repository: IRoleRepo = new RoleRepo();
 const userRepo: IUserRepo = new UserRepo();
-const roleUsecase:IRoleUsecase = new RoleUsecase(repository);
+const logger: Logging = new Logging();
+const roleUsecase:IRoleUsecase = new RoleUsecase(repository, logger);
 const userHandler = new RoleHandler(roleUsecase);
 
 const roleRouter = Router();

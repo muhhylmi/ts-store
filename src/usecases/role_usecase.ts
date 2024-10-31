@@ -1,14 +1,16 @@
 import { CreateRoleInput, RoleModel } from "../domain/model/role_model";
 import IRoleRepo from "../domain/repositories/role_repo_int";
 import { HttpException } from "../utils/exception";
-import logger from "../utils/logger";
+import { Logging } from "../utils/logger";
 import IRoleUsecase from "./role_usecase_int";
 
 
 class RoleUsecase implements IRoleUsecase {
   private readonly repository: IRoleRepo;
-  constructor(repository: IRoleRepo, ) {
+  private readonly logger: Logging;
+  constructor(repository: IRoleRepo, logger: Logging) {
     this.repository = repository;
+    this.logger = logger;
   }
 
   async createRole(role: CreateRoleInput){
@@ -20,7 +22,7 @@ class RoleUsecase implements IRoleUsecase {
       role_name: role.roleName
     });
     if (existRole) {
-      logger.error('rolename already exists');
+      this.logger.logError('rolename already exists');
       throw new HttpException(400,'rolename already exists');
     }
     const newRole =  await this.repository.createRole(input);
