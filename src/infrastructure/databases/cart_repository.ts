@@ -1,6 +1,6 @@
 import { CartModel, CartResponse } from "../../domain/model/cart_model";
 import ICartRepo from "../../domain/repositories/cart_repo_int";
-import { paymentStatus } from "../../utils/contant";
+import { paymentStatus } from "../../utils/constant";
 import { HttpException } from "../../utils/exception";
 import prisma from "../../utils/prisma";
 

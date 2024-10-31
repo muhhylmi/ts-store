@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { ItemModel } from './item_model';
+import { bankType } from '../../utils/constant';
 
 export interface CartResponse {
     id: number;
@@ -44,7 +45,7 @@ export type UpdateCartInput = z.infer<typeof updateCartSchema> & {
 
 export const chargeSchema = z.object({
   cartIds: z.array(z.number()).min(1),
-  bank: z.enum(['bca'])
+  bank: z.enum([bankType.bca, bankType.bri, bankType.permata])
 });
 export type ChargeInput = z.infer<typeof chargeSchema>
 
