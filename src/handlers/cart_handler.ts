@@ -83,7 +83,13 @@ export class CartHanlder {
         cartIds: req.body.cartIds,
         bank: req.body.bank,
       };
-      const newItem = await this.cartUsecase.cartCharge(item);
+      const user: UserModel = {
+        id: Number(req.body.user.id),
+        username: req.body.user.username,
+        password: "",
+        roleId: req.body.user.roleId
+      };
+      const newItem = await this.cartUsecase.cartCharge(item, user);
       responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);

@@ -1,4 +1,4 @@
-import { ChargeResponse, MidtransModel, TransactionDetail } from "../../domain/model/midtrans_model";
+import { ChargeResponse, DetailData, MidtransModel } from "../../domain/model/midtrans_model";
 import IPaymentRepo from "../../domain/repositories/payment_int";
 import { ApiCaller } from "../../utils/apicaller";
 import { bankType } from "../../utils/constant";
@@ -18,31 +18,37 @@ export class Midtrans implements IPaymentRepo {
     return result as MidtransModel;
   }
 
-  async BCA(data: TransactionDetail): Promise<MidtransModel>{
+  async BCA(data: DetailData): Promise<MidtransModel>{
     const result = await this.getBaseBody('bank_transfer');
     result.bank_transfer = {
       bank: bankType.bca
     };
-    result.transaction_details = data;
+    result.transaction_details = data.transaction_details;
+    result.customer_details = data.customer_details;
+    result.item_details = data.item_details;
     return result;
   }
 
-  async BRI(data: TransactionDetail): Promise<MidtransModel>{
+  async BRI(data: DetailData): Promise<MidtransModel>{
     const result = await this.getBaseBody('bank_transfer');
     result.bank_transfer = {
       bank: bankType.bri
     };
-    result.transaction_details = data;
+    result.transaction_details = data.transaction_details;
+    result.customer_details = data.customer_details;
+    result.item_details = data.item_details;
     return result;
   }
 
-  async permata(data: TransactionDetail): Promise<MidtransModel>{
+  async permata(data: DetailData): Promise<MidtransModel>{
     const result = await this.getBaseBody('permata');
-    result.transaction_details = data;
+    result.transaction_details = data.transaction_details;
+    result.customer_details = data.customer_details;
+    result.item_details = data.item_details;
     return result;
   }
     
-  async charge(bank: string, data: TransactionDetail): Promise<ChargeResponse> {
+  async charge(bank: string, data: DetailData): Promise<ChargeResponse> {
     let midtransPayload: MidtransModel;
     switch (bank) {
     case bankType.bca:

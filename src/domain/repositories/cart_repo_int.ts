@@ -7,5 +7,6 @@ interface ICartRepo {
     getCart: (query: unknown) => Promise<CartResponse[]>;
     findOne: (param:object) => Promise<CartResponse|null>;
     updateOne: (id: number, data: CartModel) => Promise<CartResponse|null> 
+    updateMany: (ids: number[], data: object) => Promise<number> 
 }
 export default ICartRepo;

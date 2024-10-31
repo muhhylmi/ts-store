@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { ChargeResponse, TransactionDetail } from "../model/midtrans_model";
+import { ChargeResponse, DetailData } from "../model/midtrans_model";
 
 interface IPaymentRepo {
-    charge: (bank: string, data: TransactionDetail) => Promise<ChargeResponse>;
+    charge: (bank: string, data: DetailData) => Promise<ChargeResponse>;
 
 }
 export default IPaymentRepo;

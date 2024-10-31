@@ -106,6 +106,22 @@ class CartRepo implements ICartRepo {
     };
   }
 
+  async updateMany(ids: number[],  data: object): Promise<number> {
+    const result = await prisma.cart.updateMany({
+      where: {
+        id: {
+          in: ids
+        }
+      },
+      data: {
+        ...data
+      }
+    });
+
+    return result.count;
+  }
+
+
 }
 
 export default CartRepo;

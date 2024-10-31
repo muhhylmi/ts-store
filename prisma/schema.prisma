@@ -35,6 +35,7 @@ model User {
 
   role Role @relation(fields: [roleId], references: [id])
   cart Cart[]
+  order Order[]
 
   @@map("users")
 }
@@ -58,6 +59,7 @@ model Cart {
   user_id Int
   item_id Int
   count Int
+  order_id String? 
 
   
   is_deleted Boolean @default(false)
@@ -65,5 +67,20 @@ model Cart {
 
   item Item @relation(fields: [item_id], references: [id])
   user User @relation(fields: [user_id], references: [id])
+  order Order? @relation(fields: [order_id], references: [id])
   @@map("carts")
+}
+
+model Order {
+  id      String @unique 
+  user_id Int
+  status  String
+
+  is_deleted Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+  cart Cart[]
+
+  @@map("orders")
 }

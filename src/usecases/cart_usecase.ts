@@ -1,8 +1,11 @@
 import { CartModel, ChargeInput, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
-import { ChargeResponse, TransactionDetail } from "../domain/model/midtrans_model";
+import { CustomerDetail, DetailData, ItemDetail, TransactionDetail } from "../domain/model/midtrans_model";
+import { OrderModel, OrderResponse } from "../domain/model/order_model";
 import { UserModel } from "../domain/model/user_model";
 import ICartRepo from "../domain/repositories/cart_repo_int";
+import IOrderRepo from "../domain/repositories/order_repo_int";
 import IPaymentRepo from "../domain/repositories/payment_int";
+import { paymentStatus } from "../utils/constant";
 import { HttpException } from "../utils/exception";
 import ICartUsecase from "./cart_usecase_int";
 
@@ -10,9 +13,11 @@ import ICartUsecase from "./cart_usecase_int";
 class CartUsecase implements ICartUsecase {
   private readonly repository: ICartRepo;
   private readonly payment: IPaymentRepo;
-  constructor(repository: ICartRepo, payment: IPaymentRepo) {
+  private readonly orderRepo: IOrderRepo;
+  constructor(repository: ICartRepo, payment: IPaymentRepo, orderRepo: IOrderRepo) {
     this.repository = repository;
     this.payment = payment;
+    this.orderRepo = orderRepo;
   }
 
   async createCart(item: CreateCartInput, user: UserModel){
@@ -77,24 +82,64 @@ class CartUsecase implements ICartUsecase {
   }
 
 
-  async cartCharge(carts: ChargeInput): Promise<ChargeResponse> {
+  async cartCharge(carts: ChargeInput, user: UserModel): Promise<OrderResponse> {
 
     const dataCarts = await this.repository.getCart({
       id: {
         in: carts.cartIds
-      }
+      },
+      status: paymentStatus.UNPAID
     });
-    const grossAmount = dataCarts.reduce((acc, item)=> {
-      return acc + (item.price as number * item.count);
-    },0);
-
-    const data: TransactionDetail = {
-      gross_amount: grossAmount,
-      order_id: new Date().toISOString()
+    if (dataCarts.length === 0) {
+      throw new HttpException(404, 'carts is not found');
+    }
+    const itemDetails: ItemDetail[] = dataCarts.map((cart) => {
+      return {
+        id: cart.itemId,
+        price: cart.price,
+        quantity: cart.count,
+        name: cart.itemName
+      };
+    });
+    const customerDetail: CustomerDetail = {
+      first_name: user.username
     };
-    return await this.payment.charge(carts.bank, data );
-  }
+    const transactionDetail: TransactionDetail = {
+      gross_amount: dataCarts.reduce((acc, item)=> acc + (item.price as number * item.count) ,0),
+      order_id: new Date().getTime().toString()
+    };
+    const detailData: DetailData = {
+      item_details: itemDetails,
+      customer_details: customerDetail,
+      transaction_details: transactionDetail
+    };
+    const midtransResult = await this.payment.charge(carts.bank, detailData);
+    if (midtransResult.status_code !== "201") {
+      throw new HttpException(Number(midtransResult.status_code), midtransResult.status_message);
+    }
+    const dataOrder: OrderModel = {
+      id: Date.now().toString(),
+      status: midtransResult.transaction_status,
+      userId: user.id
+    };
+    const orderResult = await this.orderRepo.create(dataOrder);
+    if (!orderResult) {
+      throw new HttpException(409, 'Cannot create order');
+    }
+    const updateCart = await this.repository.updateMany(carts.cartIds,  {
+      status: paymentStatus.PAID,
+      order_id: orderResult.id
+    });
+    if (!updateCart) {
+      throw new HttpException(409, 'Cannot update cart status');
+    }
 
+    const result: OrderResponse = {
+      ...midtransResult,
+      orderData: orderResult
+    };
+    return result;
+  }
 }
 
 

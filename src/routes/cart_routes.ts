@@ -12,13 +12,16 @@ import { chargeSchema, createCartSchema, newUpdateCartSchema } from '../domain/m
 import { getItemSchema } from '../domain/model/item_model';
 import IPaymentRepo from '../domain/repositories/payment_int';
 import { Midtrans } from '../infrastructure/payments/midtrans';
+import IOrderRepo from '../domain/repositories/order_repo_int';
+import OrderRepo from '../infrastructure/databases/order_repository';
 
 // Dependency Injection
 
 const repository: ICartRepo = new CartRepo();
 const userRepo: IUserRepo = new UserRepo();
 const payment: IPaymentRepo = new Midtrans();
-const cartUsecase:ICartUsecase = new CartUsecase(repository, payment);
+const orderRepo: IOrderRepo = new OrderRepo();
+const cartUsecase:ICartUsecase = new CartUsecase(repository, payment, orderRepo);
 const cartHanlder = new CartHanlder(cartUsecase);
 
 const cartRouter = Router();
