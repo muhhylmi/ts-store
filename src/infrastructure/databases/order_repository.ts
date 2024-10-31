@@ -19,6 +19,40 @@ class OrderRepo implements IOrderRepo {
     };
   }
 
+  async updateStatus(orderId: string, status: string): Promise<OrderModel> {
+    const data = await prisma.order.update({
+      where: {
+        id: orderId
+      },
+      data: {
+        status: status
+      }
+    });
+    return {
+      id: data.id,
+      userId: data.user_id,
+      status: data.status,
+      createdAt: data.createdAt  
+    }; 
+  }
+
+  async findOne(query: object): Promise<OrderModel | null> {
+    const data = await prisma.order.findFirst({
+      where: {
+        ...query
+      }
+    });
+    if (!data) {
+      return null;
+    }
+    return {
+      id: data.id,
+      userId: data.user_id,
+      status: data.status,
+      createdAt: data.createdAt  
+    }; 
+  }
+
   async createTransaction<T>(promises: Promise<T>[]): Promise<T[]> {
     const results: T[] = [];
   

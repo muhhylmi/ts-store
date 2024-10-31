@@ -28,7 +28,8 @@ class CartUsecase implements ICartUsecase {
     };
     const existsCart = await this.repository.findOne({
       item_id: item.itemId,
-      user_id: user.id
+      user_id: user.id,
+      status: paymentStatus.UNPAID
     });
     if (existsCart) {
       const updateCart: UpdateCartInput = {
@@ -58,7 +59,9 @@ class CartUsecase implements ICartUsecase {
   }
 
   async getCart(): Promise<object> {
-    const carts = await this.repository.getCart({});
+    const carts = await this.repository.getCart({
+      status: paymentStatus.UNPAID
+    });
     return carts;
   }
 
@@ -83,6 +86,7 @@ class CartUsecase implements ICartUsecase {
 
 
   async cartCharge(carts: ChargeInput, user: UserModel): Promise<OrderResponse> {
+    const newOrderId = Date.now().toString();
 
     const dataCarts = await this.repository.getCart({
       id: {
@@ -106,7 +110,7 @@ class CartUsecase implements ICartUsecase {
     };
     const transactionDetail: TransactionDetail = {
       gross_amount: dataCarts.reduce((acc, item)=> acc + (item.price as number * item.count) ,0),
-      order_id: new Date().getTime().toString()
+      order_id: newOrderId
     };
     const detailData: DetailData = {
       item_details: itemDetails,
@@ -118,7 +122,7 @@ class CartUsecase implements ICartUsecase {
       throw new HttpException(Number(midtransResult.status_code), midtransResult.status_message);
     }
     const dataOrder: OrderModel = {
-      id: Date.now().toString(),
+      id: newOrderId,
       status: midtransResult.transaction_status,
       userId: user.id
     };
@@ -128,7 +132,7 @@ class CartUsecase implements ICartUsecase {
     }
     const updateCart = await this.repository.updateMany(carts.cartIds,  {
       status: paymentStatus.PAID,
-      order_id: orderResult.id
+      order_id: newOrderId
     });
     if (!updateCart) {
       throw new HttpException(409, 'Cannot update cart status');
@@ -140,6 +144,16 @@ class CartUsecase implements ICartUsecase {
     };
     return result;
   }
+
+  async updateStatusOrder(order: Omit<OrderModel, 'userId'>): Promise<OrderModel> {
+    const checkOrder = await this.orderRepo.findOne({ id:  order.id });
+    if (!checkOrder) {
+      throw new HttpException(404, 'order is not found');
+    }
+
+    return await this.orderRepo.updateStatus(order.id, order.status);
+  }
+  
 }
 
 

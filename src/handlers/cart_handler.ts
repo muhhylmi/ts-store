@@ -3,6 +3,7 @@ import { responseSuccess } from "../utils/wrapper";
 import ICartUsecase from "../usecases/cart_usecase_int";
 import { ChargeInput, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
 import { UserModel } from "../domain/model/user_model";
+import { OrderModel } from "../domain/model/order_model";
 
 export class CartHanlder {
   private cartUsecase: ICartUsecase;
@@ -90,6 +91,19 @@ export class CartHanlder {
         roleId: req.body.user.roleId
       };
       const newItem = await this.cartUsecase.cartCharge(item, user);
+      responseSuccess(res, 201, "Horray request success created", newItem);
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  async updateStatusOrder (req: Request, res: Response, next: NextFunction) {
+    try {
+      const order: Omit<OrderModel, 'userId'> = {
+        id: req.body.order_id,
+        status: req.body.transaction_status,
+      };
+      const newItem = await this.cartUsecase.updateStatusOrder(order);
       responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);
