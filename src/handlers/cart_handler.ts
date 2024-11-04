@@ -1,9 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 import { responseSuccess } from "../utils/wrapper";
 import ICartUsecase from "../usecases/cart_usecase_int";
-import { ChargeInput, CreateCartInput, UpdateCartInput } from "../domain/model/cart_model";
+import { ChargeInput, chargeSchema, CreateCartInput, createCartSchema, UpdateCartInput, updateCartSchema } from "../domain/model/cart_model";
 import { UserModel } from "../domain/model/user_model";
 import { OrderModel } from "../domain/model/order_model";
+import { validateHandlers } from "../utils/middlewares";
+import { HttpException } from "../utils/exception";
+import { GetItemInput, getItemSchema } from "../domain/model/item_model";
 
 export class CartHanlder {
   private cartUsecase: ICartUsecase;
@@ -16,18 +19,15 @@ export class CartHanlder {
 
   async createCart (req: Request, res: Response, next: NextFunction) {
     try {
-      const item: CreateCartInput = {
-        itemId: req.body.itemId,
-        count: req.body.count,
-      };
-      const user: UserModel = {
-        id: Number(req.body.user.id),
-        username: req.body.user.username,
-        password: "",
-        roleId: req.body.user.roleId
-      };
-      const newItem = await this.cartUsecase.createCart(item, user);
-      responseSuccess(res, 201, "Horray request success created", newItem);
+      const { user, ...body } = req.body;
+      const { success, errors, data } = validateHandlers(createCartSchema, body);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as  CreateCartInput;
+      const userInput =  user as UserModel;
+      const newCart = await this.cartUsecase.createCart(input, userInput);
+      responseSuccess(res, 201, "Horray request success created", newCart);
     } catch (error) {
       next(error);
     }
@@ -35,19 +35,14 @@ export class CartHanlder {
 
   async updateCart (req: Request, res: Response, next: NextFunction) {
     try {
-      const item: UpdateCartInput = {
-        itemId: req.body.itemId,
-        count: req.body.count,
-        cartId: Number(req.params.cartId)
-      };
-      const user: UserModel = {
-        id: Number(req.body.user.id),
-        username: req.body.user.username,
-        password: "",
-        roleId: req.body.user.roleId
-      };
-
-      const newItem = await this.cartUsecase.updateCart(item, user);
+      const { user, ...body } = req.body;
+      const { success, errors, data } = validateHandlers(updateCartSchema, body);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as  UpdateCartInput;
+      const userInput =  user as UserModel;
+      const newItem = await this.cartUsecase.updateCart(input, userInput);
       responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);
@@ -55,15 +50,23 @@ export class CartHanlder {
   };
 
 
-  async getCart(req: Request, res: Response) {
-    const items = await this.cartUsecase.getCart();
-    responseSuccess(res, 200, 'Horray request succesfully created', items);
+  async getCart(req: Request, res: Response, next: NextFunction) {
+    try {
+      const items = await this.cartUsecase.getCart();
+      responseSuccess(res, 200, 'Horray request succesfully created', items);
+    } catch (error) {
+      next(error);
+    }
   };
 
   async getCartDetail (req: Request, res: Response, next: NextFunction) {
     try {
-      const id: number = Number(req.params.id);
-      const item = await this.cartUsecase.getCartDetail(id);
+      const { success, errors, data } = validateHandlers(getItemSchema, req.params);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as GetItemInput;      
+      const item = await this.cartUsecase.getCartDetail(input.id);
       responseSuccess(res, 200, 'Hooray Request successfully created', item);
     } catch (error) {
       next(error);
@@ -71,8 +74,12 @@ export class CartHanlder {
 
   async deleteCart (req: Request, res: Response, next: NextFunction) {
     try {
-      const id: number = Number(req.params.id);
-      const item = await this.cartUsecase.deleteCart(id);
+      const { success, errors, data } = validateHandlers(getItemSchema, req.params);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as GetItemInput;            
+      const item = await this.cartUsecase.deleteCart(input.id);
       responseSuccess(res, 200, 'Hooray Request successfully created', item);
     } catch (error) {
       next(error);
@@ -80,17 +87,14 @@ export class CartHanlder {
 
   async charge (req: Request, res: Response, next: NextFunction) {
     try {
-      const item: ChargeInput = {
-        cartIds: req.body.cartIds,
-        bank: req.body.bank,
-      };
-      const user: UserModel = {
-        id: Number(req.body.user.id),
-        username: req.body.user.username,
-        password: "",
-        roleId: req.body.user.roleId
-      };
-      const newItem = await this.cartUsecase.cartCharge(item, user);
+      const { user, ...body } = req.body;
+      const { success, errors, data } = validateHandlers(chargeSchema, body);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as ChargeInput;      
+      const userInput =  user as UserModel;
+      const newItem = await this.cartUsecase.cartCharge(input, userInput);
       responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);
