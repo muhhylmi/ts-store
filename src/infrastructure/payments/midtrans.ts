@@ -2,13 +2,14 @@ import { ChargeResponse, DetailData, MidtransModel } from "../../domain/model/mi
 import IPaymentRepo from "../../domain/repositories/payment_int";
 import { ApiCaller } from "../../utils/apicaller";
 import { bankType } from "../../utils/constant";
+import { Logging } from "../../utils/logger";
 import config from "../config";
 
 export class Midtrans implements IPaymentRepo {
   private apiCaller: ApiCaller;
 
-  constructor(){
-    this.apiCaller = new ApiCaller(config.MIDTRANS_BASE_URL, config.MIDTRANS_SERVER_KEY);
+  constructor(logger: Logging){
+    this.apiCaller = new ApiCaller(config.MIDTRANS_BASE_URL, config.MIDTRANS_SERVER_KEY, logger);
   }
 
   async getBaseBody(paymentType: string): Promise<MidtransModel> {

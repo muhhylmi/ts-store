@@ -1,14 +1,17 @@
 import axios, { RawAxiosRequestHeaders } from 'axios';
 import { ChargeResponse, MidtransModel } from '../domain/model/midtrans_model';
 import { HttpException } from './exception';
+import { Logging } from './logger';
 
 export class ApiCaller {
   private baseUrl: string;
   private token: string;
+  private logger: Logging;
 
-  constructor(baseUrl: string, token: string){
+  constructor(baseUrl: string, token: string, logger: Logging){
     this.baseUrl = baseUrl;
     this.token = token;
+    this.logger = logger;
   }
 
   async getHeader(): Promise<RawAxiosRequestHeaders> {
@@ -27,6 +30,7 @@ export class ApiCaller {
       headers: await this.getHeader()
     });
     if (!result.data) {
+      this.logger.logError("Cannot create data from " + this.baseUrl + "/"+ route);
       throw new HttpException(409, "Cannot create data from " + this.baseUrl + "/"+ route);
     }
     return result.data as ChargeResponse;

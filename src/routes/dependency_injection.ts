@@ -34,15 +34,14 @@ class DIContainer {
   private paymentRepo: IPaymentRepo;
   private roleRepo: IRoleRepo;
 
-  constructor() {
+  constructor(logger: Logging) {
     this.itemRepo = new ItemRepo();
     this.userRepo = new UserRepo();
     this.cartRepo = new CartRepo();
     this.orderRepo = new OrderRepo();
-    this.paymentRepo = new Midtrans();
-    this.logger = new Logging();
+    this.logger = logger;
     this.roleRepo = new  RoleRepo();
-
+    this.paymentRepo = new Midtrans(logger);
   }
 
   // create usecase
@@ -84,7 +83,8 @@ class DIContainer {
 }
 
 // Instantiate the DI container
-const diContainer = new DIContainer();
+const logger = new Logging();
+const diContainer = new DIContainer(logger);
 
 // Export instances
 export const itemHandler = diContainer.createItemHandler();
