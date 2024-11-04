@@ -5,9 +5,8 @@ import IUserRepo from "../domain/repositories/user_repo_int";
 import UserUsecase from '../usecases/user_usecase';
 import UserRepo from '../infrastructure/databases/user_repository';
 import IUserUsecase from '../usecases/user_usercase_int';
-import { basicAuthMiddleware, jwtAuthMiddleware, validate, validateParams } from '../utils/middlewares';
-import { createUserSchema, getUserSchema } from '../domain/model/user_model';
 import { Logging } from '../utils/logger';
+import { basicAuthMiddlewareDI, jwtMiddlewareDI } from './dependency_injection';
 
 // Dependency Injection
 const repository: IUserRepo = new UserRepo();
@@ -17,11 +16,7 @@ const userHandler = new UserHandler(userUsecase);
 
 const userRouter = Router();
 
-userRouter.post('/', 
-  basicAuthMiddleware, 
-  validate(createUserSchema),
-  (req, res, next) => userHandler.createUser(req, res, next)
-);
+userRouter.post('/', basicAuthMiddlewareDI, userHandler.createUser.bind(userHandler));
 /**
  * @swagger
  * /api/users:
@@ -40,24 +35,10 @@ userRouter.post('/',
  *                   type: string
  *                   example: user44
  */
-userRouter.get('', 
-  (req, res, next) => jwtAuthMiddleware(req, res, next, repository),
-  (req, res) => userHandler.getUser(req, res)
-);
-userRouter.get('/:id',
-  (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
-  validateParams(getUserSchema),
-  (req, res, next) => userHandler.getUserById(req, res, next)
-);
-userRouter.delete('/:id',
-  (req, res, next) => jwtAuthMiddleware(req, res, next, repository), 
-  validateParams(getUserSchema),
-  (req, res, next) => userHandler.deleteUser(req, res, next)
-);
-userRouter.post('/login', 
-  basicAuthMiddleware, 
-  (req, res, next) => userHandler.login(req, res, next)
-);
+userRouter.get('', jwtMiddlewareDI, userHandler.getUser.bind(userHandler));
+userRouter.get('/:id', jwtMiddlewareDI,  userHandler.getUserById.bind(userHandler));
+userRouter.delete('/:id',jwtMiddlewareDI, userHandler.deleteUser.bind(userHandler));
+userRouter.post('/login', basicAuthMiddlewareDI, userHandler.login.bind(userHandler));
 
 
 export default userRouter;

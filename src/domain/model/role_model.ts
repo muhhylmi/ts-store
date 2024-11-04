@@ -24,9 +24,9 @@ export const createRoleSchema = z.object({
   roleName: z.string().min(1, "Name is required"),
   visibility: z.array(z.string()).nonempty("Visibility cannot be empty")
 });
-
 export type CreateRoleInput = z.infer<typeof createRoleSchema>;
 
 export const getRoleSchema = z.object({
-  id: z.string().regex(/^\d+$/, "Id must be a number")
+  id: z.string().regex(/^\d+$/, "Id must be a number").transform(Number)
 });
+export type GetRoleInput = z.infer<typeof getRoleSchema>;

@@ -6,7 +6,7 @@ import ItemUsecase from '../usecases/item_usecase';
 import IItemUsecase from '../usecases/item_usecase_int';
 import { ItemHandler } from '../handlers/item_handler';
 import { Logging } from '../utils/logger';
-import { newJwtAuthMiddleware } from '../utils/middlewares';
+import { basicAuthMiddleware, newJwtAuthMiddleware } from '../utils/middlewares';
 import ICartRepo from '../domain/repositories/cart_repo_int';
 import IOrderRepo from '../domain/repositories/order_repo_int';
 import IPaymentRepo from '../domain/repositories/payment_int';
@@ -78,6 +78,9 @@ class DIContainer {
   public createJwtMiddleware() {
     return newJwtAuthMiddleware(this.userRepo);
   }
+  public createBasicAuthMiddleware() {
+    return basicAuthMiddleware;
+  }
 }
 
 // Instantiate the DI container
@@ -88,4 +91,5 @@ export const itemHandler = diContainer.createItemHandler();
 export const cartHandler = diContainer.createCartHandler();
 export const userHandler = diContainer.createUserHandler();
 export const roleHandler = diContainer.createRoleHandler();
+export const basicAuthMiddlewareDI = diContainer.createBasicAuthMiddleware();
 export const jwtMiddlewareDI = diContainer.createJwtMiddleware();
