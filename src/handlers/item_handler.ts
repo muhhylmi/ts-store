@@ -1,39 +1,50 @@
 import { NextFunction, Request, Response } from "express";
 import { responseSuccess } from "../utils/wrapper";
 import IItemUsecase from "../usecases/item_usecase_int";
-import { CreateItemInput } from "../domain/model/item_model";
+import { CreateItemInput, createItemSchema, GetItemInput, getItemSchema } from "../domain/model/item_model";
+import { validateHandlers } from "../utils/middlewares";
+import { HttpException } from "../utils/exception";
 
 export class ItemHandler {
-  private itemUsecasee: IItemUsecase;
+  private itemUsecase: IItemUsecase;
 
   constructor(
-    itemUsecasee: IItemUsecase
+    itemUsecase: IItemUsecase
   ) {
-    this.itemUsecasee = itemUsecasee;
+    this.itemUsecase = itemUsecase;
   }
 
   async createItem (req: Request, res: Response, next: NextFunction) {
     try {
-      const item: CreateItemInput = {
-        itemName: req.body.itemName,
-        price: req.body.price
-      };
-      const newItem = await this.itemUsecasee.createItem(item);
+      const { success, errors, data } = validateHandlers(createItemSchema, req.body);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const  item = data as CreateItemInput;
+      const newItem = await this.itemUsecase.createItem(item);
       responseSuccess(res, 201, "Horray request success created", newItem);
     } catch (error) {
       next(error);
     }
   };
 
-  async getItem(req: Request, res: Response) {
-    const items = await this.itemUsecasee.getItem();
-    responseSuccess(res, 200, 'Horray request succesfully created', items);
+  async getItem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const items = await this.itemUsecase.getItem();
+      responseSuccess(res, 200, 'Horray request succesfully created', items);
+    } catch (error) {
+      next(error);
+    }
   };
 
   async getItemById (req: Request, res: Response, next: NextFunction) {
     try {
-      const id: number = Number(req.params.id);
-      const item = await this.itemUsecasee.getItemById(id);
+      const { success, errors, data } = validateHandlers(getItemSchema, req.params);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as GetItemInput;
+      const item = await this.itemUsecase.getItemById(input.id);
       responseSuccess(res, 200, 'Hooray Request successfully created', item);
     } catch (error) {
       next(error);
@@ -41,8 +52,12 @@ export class ItemHandler {
 
   async deleteItem (req: Request, res: Response, next: NextFunction) {
     try {
-      const id: number = Number(req.params.id);
-      const item = await this.itemUsecasee.deleteItem(id);
+      const { success, errors, data } = validateHandlers(getItemSchema, req.params);
+      if (!success) {
+        throw new HttpException(400, errors || "Validation Error");
+      }
+      const input = data as GetItemInput;      
+      const item = await this.itemUsecase.deleteItem(input.id);
       responseSuccess(res, 200, 'Hooray Request successfully created', item);
     } catch (error) {
       next(error);

@@ -1,11 +1,11 @@
 export class HttpException extends Error {
   public status: number;
-  public message: string;
-  
+
   constructor(status: number, message: string) {
-    super(message);
+    super(message); // Call the parent constructor with the message
     this.status = status;
-    this.message = message;
+
+    // Set the prototype explicitly for proper instanceof checks
+    Object.setPrototypeOf(this, HttpException.prototype);
   }
 }
-  

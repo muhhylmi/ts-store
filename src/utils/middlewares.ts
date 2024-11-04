@@ -59,6 +59,36 @@ export const jwtAuthMiddleware = async (req: Request, res: Response, next: NextF
 };
 
 
+export const newJwtAuthMiddleware = (repo: IUserRepo) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const authHeader = req.headers['authorization'];
+      if (!authHeader) {
+        throw next(new HttpException(400, "Invalid Token"));
+      }
+  
+      const token = authHeader.split(' ')[1];
+      const decode = jwt.verify(token, config.JWTPRIVATEKEY) as JwtPayload;
+      if (!decode) {
+        throw next(new HttpException(400, "Invalid Token"));
+      }
+  
+      const user = await repo.findOne({
+        username: decode.username
+      });
+      if (!user) {
+        throw new HttpException(400, "Invalid Token");
+      }
+  
+      req.body.user = user;
+  
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
 export const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
   try {
     schema.parse(req.body);
@@ -115,4 +145,24 @@ export const validateRequest = (schema: AnyZodObject) => {
     
     next();
   };
+};
+
+export const validateHandlers = <T>(
+  schema: AnyZodObject,
+  data: unknown
+): { success: boolean; data?: T; errors?: string } => {
+  try {
+    const parsedData = schema.parse(data); 
+    return { success: true, data: parsedData as T }; 
+  } catch (error) {
+    if (error instanceof ZodError) {
+      const errorMessages = error.issues.map(issue => {
+        return `${issue.path.join('.')} - ${issue.message}`;
+      }).join(', ');
+
+      return { success: false, errors: errorMessages }; 
+    }
+    
+    return { success: false, errors: 'An unexpected error occurred.' };
+  }
 };
