@@ -1,4 +1,6 @@
-export const userTypeDefs = `
+import gql from "graphql-tag";
+
+export const userTypeDefs = gql`
   type User {
     id: ID!
     username: String!
@@ -10,6 +12,6 @@ export const userTypeDefs = `
   }
 
   type Mutation {
-    createUser(username: String!, password: String!): User!
+    createUser(username: String!, password: String!, roleId: Int!): User!
   }
 `;

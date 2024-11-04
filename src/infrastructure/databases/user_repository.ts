@@ -29,13 +29,25 @@ class UserRepo implements IUserRepo {
     });
   }
 
-  async getUser():Promise<object>{
+  async getUser():Promise<UserResponse[]>{
     const users = await prisma.user.findMany({
+      include: {
+        role: true
+      },
       where: {
         is_deleted: false
       }
     });
-    return users;
+    return users.map(user => {
+      return {
+        id: user.id,
+        roleName: user.role.role_name,
+        roleId: user.roleId,
+        username: user.username,
+        created_at: user.createdAt,
+        password: user.password
+      };
+    });
   }
 
   async findOne(query: object): Promise<UserResponse|null> {

@@ -22,6 +22,7 @@ export interface UserResponse {
     username?: string;
     password?: string;
     roleId?: number;
+    roleName?: string;
     id?: number;
     is_deleted?: boolean;
     created_at?: Date;

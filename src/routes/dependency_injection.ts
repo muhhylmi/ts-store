@@ -44,6 +44,11 @@ class DIContainer {
     this.paymentRepo = new Midtrans(logger);
   }
 
+  // get repository
+  public getUserRepo(): IUserRepo {
+    return this.userRepo;
+  }
+
   // create usecase
   public createItemUsecase(): IItemUsecase {
     return new ItemUsecase(this.itemRepo, this.logger);
@@ -91,5 +96,6 @@ export const itemHandler = diContainer.createItemHandler();
 export const cartHandler = diContainer.createCartHandler();
 export const userHandler = diContainer.createUserHandler();
 export const roleHandler = diContainer.createRoleHandler();
+export const userRepo = diContainer.getUserRepo();
 export const basicAuthMiddlewareDI = diContainer.createBasicAuthMiddleware();
 export const jwtMiddlewareDI = diContainer.createJwtMiddleware();

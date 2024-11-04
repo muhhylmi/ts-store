@@ -4,7 +4,7 @@ import { UserModelWithoutId, UserResponse } from "../model/user_model";
 interface IUserRepo {
     createUser: (user: UserModelWithoutId) => Promise<UserResponse>;
     deleteUser: (id: number) => void;
-    getUser: () => Promise<object>;
+    getUser: () => Promise<UserResponse[]>;
     findOne: (param:object) => Promise<UserResponse|null>;
 
 }
