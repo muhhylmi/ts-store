@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { itemHandler, jwtMiddlewareDI } from './dependency_injection';
+import { itemHandler, jwtMiddlewareDI } from '../utils/dependency_injection';
 
 const itemRouter = Router();
 

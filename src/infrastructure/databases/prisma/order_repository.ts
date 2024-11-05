@@ -1,10 +1,15 @@
-import { OrderModel } from "../../domain/model/order_model";
-import IOrderRepo from "../../domain/repositories/order_repo_int";
-import prisma from "../../utils/prisma";
+import { PrismaClient } from "@prisma/client";
+import { OrderModel } from "../../../domain/model/order_model";
+import IOrderRepo from "../../../domain/repositories/order_repo_int";
+import { TDatabases } from "..";
 
 class OrderRepo implements IOrderRepo {
+  private readonly prisma: PrismaClient;
+  constructor(db: TDatabases){
+    this.prisma = db.getPrismaClient();
+  }
   async create(order: OrderModel): Promise<OrderModel> {
-    const data = await prisma.order.create({
+    const data = await this.prisma.order.create({
       data: {
         id: order.id,
         user_id: order.userId,
@@ -20,7 +25,7 @@ class OrderRepo implements IOrderRepo {
   }
 
   async updateStatus(orderId: string, status: string): Promise<OrderModel> {
-    const data = await prisma.order.update({
+    const data = await this.prisma.order.update({
       where: {
         id: orderId
       },
@@ -37,7 +42,7 @@ class OrderRepo implements IOrderRepo {
   }
 
   async findOne(query: object): Promise<OrderModel | null> {
-    const data = await prisma.order.findFirst({
+    const data = await this.prisma.order.findFirst({
       where: {
         ...query
       }
@@ -56,7 +61,7 @@ class OrderRepo implements IOrderRepo {
   async createTransaction<T>(promises: Promise<T>[]): Promise<T[]> {
     const results: T[] = [];
   
-    await prisma.$transaction(async () => {
+    await this.prisma.$transaction(async () => {
       results.push(...await Promise.all(promises));
     });
   

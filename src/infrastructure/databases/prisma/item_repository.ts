@@ -1,11 +1,17 @@
-import { ItemModel, ItemResponse } from "../../domain/model/item_model";
-import IItemRepo from "../../domain/repositories/item_repo_int";
-import { HttpException } from "../../utils/exception";
-import prisma from "../../utils/prisma";
+import { PrismaClient } from "@prisma/client";
+import { ItemModel, ItemResponse } from "../../../domain/model/item_model";
+import IItemRepo from "../../../domain/repositories/item_repo_int";
+import { HttpException } from "../../../utils/exception";
+import { TDatabases } from "..";
 
 class ItemRepo implements IItemRepo {
+  private readonly prisma: PrismaClient;
+  constructor(db: TDatabases){
+    this.prisma = db.getPrismaClient();
+  }
+
   async createItem(item: ItemModel): Promise<ItemResponse> {
-    const newItem =  await prisma.item.create({
+    const newItem =  await this.prisma.item.create({
       data: {
         item_name: item.item_name,
         price: item.price,
@@ -19,7 +25,7 @@ class ItemRepo implements IItemRepo {
     };
   }
   async deleteItem(id: number){
-    const update = prisma.item.update({
+    const update = this.prisma.item.update({
       where: {
         id: id,
       },
@@ -35,7 +41,7 @@ class ItemRepo implements IItemRepo {
   }
 
   async getItem():Promise<object>{
-    const items = await prisma.item.findMany({
+    const items = await this.prisma.item.findMany({
       where: {
         is_deleted: false
       }
@@ -44,7 +50,7 @@ class ItemRepo implements IItemRepo {
   }
 
   async findOne(query: object): Promise<ItemResponse|null> {
-    const item = await prisma.item.findFirst({
+    const item = await this.prisma.item.findFirst({
       where: { ...query, is_deleted: false }
     });
     if (!item) {

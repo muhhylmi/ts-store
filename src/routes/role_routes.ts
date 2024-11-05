@@ -1,6 +1,6 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
-import { basicAuthMiddlewareDI, jwtMiddlewareDI, roleHandler } from './dependency_injection';
+import { basicAuthMiddlewareDI, jwtMiddlewareDI, roleHandler } from '../utils/dependency_injection';
 
 // Dependency Injection
 

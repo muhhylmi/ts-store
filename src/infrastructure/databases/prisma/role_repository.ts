@@ -1,11 +1,16 @@
-import { RoleModel, RoleResponse } from "../../domain/model/role_model";
-import IRoleRepo from "../../domain/repositories/role_repo_int";
-import { HttpException } from "../../utils/exception";
-import prisma from "../../utils/prisma";
+import { PrismaClient } from "@prisma/client";
+import { RoleModel, RoleResponse } from "../../../domain/model/role_model";
+import IRoleRepo from "../../../domain/repositories/role_repo_int";
+import { HttpException } from "../../../utils/exception";
+import { TDatabases } from "..";
 
 class RoleRepo implements IRoleRepo {
+  private readonly prisma: PrismaClient;
+  constructor(db: TDatabases){
+    this.prisma = db.getPrismaClient();
+  }
   async createRole(role: RoleModel): Promise<RoleResponse> {
-    const newRole =  await prisma.role.create({
+    const newRole =  await this.prisma.role.create({
       data: {
         role_name: role.rolename,
         id: role.roleId,
@@ -20,7 +25,7 @@ class RoleRepo implements IRoleRepo {
     };
   }
   async deleteRole(id: number){
-    const update = prisma.role.update({
+    const update = this.prisma.role.update({
       where: {
         id: id,
       },
@@ -36,7 +41,7 @@ class RoleRepo implements IRoleRepo {
   }
 
   async getRole():Promise<object>{
-    const roles = await prisma.role.findMany({
+    const roles = await this.prisma.role.findMany({
       where: {
         is_deleted: false
       }
@@ -45,7 +50,7 @@ class RoleRepo implements IRoleRepo {
   }
 
   async findOne(query: object): Promise<RoleResponse|null> {
-    const role = await prisma.role.findFirst({
+    const role = await this.prisma.role.findFirst({
       where: { ...query, is_deleted: false }
     });
     if (!role) {

@@ -1,6 +1,6 @@
 import { UserResponse } from "../../domain/model/user_model";
 import IUserRepo from "../../domain/repositories/user_repo_int";
-import { userRepo } from "../../routes/dependency_injection";
+import { userRepo } from "../../utils/dependency_injection";
 import { HttpException } from "../../utils/exception";
 
 class UserResolvers {

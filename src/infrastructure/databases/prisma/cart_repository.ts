@@ -1,12 +1,17 @@
-import { CartModel, CartResponse } from "../../domain/model/cart_model";
-import ICartRepo from "../../domain/repositories/cart_repo_int";
-import { paymentStatus } from "../../utils/constant";
-import { HttpException } from "../../utils/exception";
-import prisma from "../../utils/prisma";
+import { PrismaClient } from "@prisma/client";
+import { CartModel, CartResponse } from "../../../domain/model/cart_model";
+import ICartRepo from "../../../domain/repositories/cart_repo_int";
+import { paymentStatus } from "../../../utils/constant";
+import { HttpException } from "../../../utils/exception";
+import { TDatabases } from "..";
 
 class CartRepo implements ICartRepo {
+  private readonly prisma: PrismaClient;
+  constructor(db: TDatabases){
+    this.prisma = db.getPrismaClient();
+  }
   async addCart(cart: CartModel): Promise<CartResponse> {
-    const newCart =  await prisma.cart.create({
+    const newCart =  await this.prisma.cart.create({
       data: {
         item_id: cart.itemId,
         count: cart.count,
@@ -22,7 +27,7 @@ class CartRepo implements ICartRepo {
     };
   }
   async deleteCart(id: number){
-    const update = prisma.item.update({
+    const update = this.prisma.item.update({
       where: {
         id: id,
       },
@@ -38,7 +43,7 @@ class CartRepo implements ICartRepo {
   }
 
   async getCart(query: unknown):Promise<CartResponse[]>{
-    const carts = await prisma.cart.findMany({
+    const carts = await this.prisma.cart.findMany({
       include: {
         item: true
       },
@@ -57,7 +62,7 @@ class CartRepo implements ICartRepo {
   }
 
   async findOne(query: object): Promise<CartResponse|null> {
-    const cart = await prisma.cart.findFirst({
+    const cart = await this.prisma.cart.findFirst({
       include: { 
         item: true,
       },
@@ -79,7 +84,7 @@ class CartRepo implements ICartRepo {
 
   
   async updateOne(id: number, data: CartModel): Promise<CartResponse|null> {
-    const cart = await prisma.cart.update(
+    const cart = await this.prisma.cart.update(
       {
         where:  { id , is_deleted: false },
         data: {
@@ -107,7 +112,7 @@ class CartRepo implements ICartRepo {
   }
 
   async updateMany(ids: number[],  data: object): Promise<number> {
-    const result = await prisma.cart.updateMany({
+    const result = await this.prisma.cart.updateMany({
       where: {
         id: {
           in: ids

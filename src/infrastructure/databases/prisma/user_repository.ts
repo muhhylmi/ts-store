@@ -1,10 +1,16 @@
-import { UserModelWithoutId, UserResponse } from "../../domain/model/user_model";
-import IUserRepo from "../../domain/repositories/user_repo_int";
-import prisma from "../../utils/prisma";
+import { PrismaClient } from "@prisma/client";
+import { UserModelWithoutId, UserResponse } from "../../../domain/model/user_model";
+import IUserRepo from "../../../domain/repositories/user_repo_int";
+import { TDatabases } from "..";
 
 class UserRepo implements IUserRepo {
+  private readonly prisma: PrismaClient;
+  constructor(db: TDatabases){
+    this.prisma = db.getPrismaClient();
+  }
+
   async createUser(user: UserModelWithoutId): Promise<UserResponse> {
-    const newUser =  await prisma.user.create({
+    const newUser =  await this.prisma.user.create({
       data: {
         username: user.username,
         roleId: user.roleId,
@@ -19,7 +25,7 @@ class UserRepo implements IUserRepo {
     };
   }
   async deleteUser(id: number){
-    return prisma.user.update({
+    return this.prisma.user.update({
       where: {
         id: id,
       },
@@ -30,7 +36,7 @@ class UserRepo implements IUserRepo {
   }
 
   async getUser():Promise<UserResponse[]>{
-    const users = await prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       include: {
         role: true
       },
@@ -51,7 +57,7 @@ class UserRepo implements IUserRepo {
   }
 
   async findOne(query: object): Promise<UserResponse|null> {
-    const user = await prisma.user.findFirst({
+    const user = await this.prisma.user.findFirst({
       where: { ...query, is_deleted: false }
     });
     if (!user) {

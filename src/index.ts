@@ -5,14 +5,12 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerOptions from './utils/swagger_option';
 import router from './routes';
-import { Logging } from './utils/logger';
 import { typeDefs } from './graphql/type_defs';
 import { resolvers } from './graphql/resolvers';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4'; 
-import { basicAuthMiddlewareDI } from './routes/dependency_injection';
+import { basicAuthMiddlewareDI, db, logger } from './utils/dependency_injection';
 
-const logger = new Logging();
 const app: Application = express(); 
 
 // Middleware for parsing JSON requests
@@ -44,4 +42,8 @@ const startServer = async () => {
   }
 };
 
-startServer();
+startServer()
+  .catch(async (e) => {
+    logger.logError(e);
+    await db.disconnect();
+  });;

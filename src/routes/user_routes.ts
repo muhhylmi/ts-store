@@ -1,18 +1,6 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
-import { UserHandler } from '../handlers/user_handler';
-import IUserRepo from "../domain/repositories/user_repo_int";
-import UserUsecase from '../usecases/user_usecase';
-import UserRepo from '../infrastructure/databases/user_repository';
-import IUserUsecase from '../usecases/user_usercase_int';
-import { Logging } from '../utils/logger';
-import { basicAuthMiddlewareDI, jwtMiddlewareDI } from './dependency_injection';
-
-// Dependency Injection
-const repository: IUserRepo = new UserRepo();
-const logger: Logging = new Logging();
-const userUsecase:IUserUsecase = new UserUsecase(repository, logger);
-const userHandler = new UserHandler(userUsecase);
+import { basicAuthMiddlewareDI, jwtMiddlewareDI, userHandler } from '../utils/dependency_injection';
 
 const userRouter = Router();
 

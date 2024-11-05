@@ -1,6 +1,6 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
-import { cartHandler, jwtMiddlewareDI } from './dependency_injection';
+import { cartHandler, jwtMiddlewareDI } from '../utils/dependency_injection';
 
 const cartRouter = Router();
 
