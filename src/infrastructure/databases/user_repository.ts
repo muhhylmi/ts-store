@@ -1,12 +1,17 @@
-import { PrismaClient } from "@prisma/client";
-import { UserModelWithoutId, UserResponse } from "../../../domain/model/user_model";
-import IUserRepo from "../../../domain/repositories/user_repo_int";
-import { TDatabases } from "..";
+import { PrismaClient, User } from "@prisma/client";
+import { UserModelWithoutId, UserResponse } from "../../domain/model/user_model";
+import IUserRepo from "../../domain/repositories/user_repo_int";
+import { TDatabases } from ".";
+import RedisService from "../../utils/redis";
+import { toUserResponse } from "../../domain/model/cart_model";
 
 class UserRepo implements IUserRepo {
   private readonly prisma: PrismaClient;
+  private readonly redis:  RedisService;
+
   constructor(db: TDatabases){
-    this.prisma = db.getPrismaClient();
+    this.prisma = db.getPrismaService().getPrismaClient();
+    this.redis =  db.getRedisService();
   }
 
   async createUser(user: UserModelWithoutId): Promise<UserResponse> {
@@ -57,20 +62,20 @@ class UserRepo implements IUserRepo {
   }
 
   async findOne(query: object): Promise<UserResponse|null> {
+    const cachedData = await this.redis.get(JSON.stringify(query));
+    if (cachedData) {
+      const cachedUser: User = JSON.parse(cachedData);
+      return toUserResponse(cachedUser);    
+    }
+
     const user = await this.prisma.user.findFirst({
       where: { ...query, is_deleted: false }
     });
     if (!user) {
       return null;
     }
-    return {
-      id: user.id,
-      username: user.username,
-      roleId: user.roleId,
-      password: user.password,
-      is_deleted: user.is_deleted,
-      created_at: user.createdAt
-    };
+    this.redis.set(JSON.stringify(query), JSON.stringify(user), 60);
+    return toUserResponse(user);
   }
 
 }

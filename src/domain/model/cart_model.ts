@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { ItemModel } from './item_model';
 import { bankType } from '../../utils/constant';
+import { User } from '@prisma/client';
+import { UserResponse } from './user_model';
 
 export interface CartResponse {
     id: number;
@@ -53,3 +55,14 @@ export const newUpdateCartSchema = z.object({
   params: getCartSchema,
   body: updateCartSchema,
 });
+
+export const toUserResponse = (user: User): UserResponse => {
+  return {
+    id: user.id,
+    username: user.username,
+    roleId: user.roleId,
+    password: user.password,
+    is_deleted: user.is_deleted,
+    created_at: user.createdAt
+  };
+};

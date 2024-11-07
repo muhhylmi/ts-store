@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { OrderModel } from "../../../domain/model/order_model";
-import IOrderRepo from "../../../domain/repositories/order_repo_int";
-import { TDatabases } from "..";
+import { OrderModel } from "../../domain/model/order_model";
+import IOrderRepo from "../../domain/repositories/order_repo_int";
+import { TDatabases } from ".";
 
 class OrderRepo implements IOrderRepo {
   private readonly prisma: PrismaClient;
   constructor(db: TDatabases){
-    this.prisma = db.getPrismaClient();
+    this.prisma = db.getPrismaService().getPrismaClient();
   }
   async create(order: OrderModel): Promise<OrderModel> {
     const data = await this.prisma.order.create({

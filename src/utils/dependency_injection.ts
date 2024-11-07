@@ -1,7 +1,7 @@
 import IItemRepo from '../domain/repositories/item_repo_int';
 import IUserRepo from '../domain/repositories/user_repo_int';
-import ItemRepo from '../infrastructure/databases/prisma/item_repository';
-import UserRepo from '../infrastructure/databases/prisma/user_repository'; 
+import ItemRepo from '../infrastructure/databases/item_repository';
+import UserRepo from '../infrastructure/databases/user_repository'; 
 import ItemUsecase from '../usecases/item_usecase';
 import IItemUsecase from '../usecases/item_usecase_int';
 import { ItemHandler } from '../handlers/item_handler';
@@ -10,8 +10,8 @@ import { basicAuthMiddleware, newJwtAuthMiddleware } from './middlewares';
 import ICartRepo from '../domain/repositories/cart_repo_int';
 import IOrderRepo from '../domain/repositories/order_repo_int';
 import IPaymentRepo from '../domain/repositories/payment_int';
-import CartRepo from '../infrastructure/databases/prisma/cart_repository';
-import OrderRepo from '../infrastructure/databases/prisma/order_repository';
+import CartRepo from '../infrastructure/databases/cart_repository';
+import OrderRepo from '../infrastructure/databases/order_repository';
 import { Midtrans } from '../infrastructure/payments/midtrans';
 import ICartUsecase from '../usecases/cart_usecase_int';
 import CartUsecase from '../usecases/cart_usecase';
@@ -21,10 +21,11 @@ import UserUsecase from '../usecases/user_usecase';
 import { UserHandler } from '../handlers/user_handler';
 import RoleUsecase from '../usecases/role_usecase';
 import IRoleRepo from '../domain/repositories/role_repo_int';
-import RoleRepo from '../infrastructure/databases/prisma/role_repository';
+import RoleRepo from '../infrastructure/databases/role_repository';
 import { RoleHandler } from '../handlers/role_handler';
-import { TDatabases } from '../infrastructure/databases';
+import { Databases, TDatabases } from '../infrastructure/databases';
 import PrismaService from './prisma';
+import RedisService from './redis';
 
 // Dependency Injection Container
 class DIContainer {
@@ -89,10 +90,13 @@ class DIContainer {
   }
 }
 
+
 // Instantiate the DI container
 export const logger = new Logging();
-export const db = new PrismaService(logger);
-const diContainer = new DIContainer(logger, db);
+const prisma = new PrismaService(logger);
+const redis = new RedisService(logger);
+export const db = new Databases(prisma, redis);
+export const diContainer = new DIContainer(logger, db);
 
 // Export instances
 export const itemHandler = diContainer.createItemHandler();

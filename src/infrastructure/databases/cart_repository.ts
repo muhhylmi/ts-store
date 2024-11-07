@@ -1,14 +1,15 @@
 import { PrismaClient } from "@prisma/client";
-import { CartModel, CartResponse } from "../../../domain/model/cart_model";
-import ICartRepo from "../../../domain/repositories/cart_repo_int";
-import { paymentStatus } from "../../../utils/constant";
-import { HttpException } from "../../../utils/exception";
-import { TDatabases } from "..";
+import { CartModel, CartResponse } from "../../domain/model/cart_model";
+import ICartRepo from "../../domain/repositories/cart_repo_int";
+import { paymentStatus } from "../../utils/constant";
+import { HttpException } from "../../utils/exception";
+import { TDatabases } from ".";
 
 class CartRepo implements ICartRepo {
   private readonly prisma: PrismaClient;
+
   constructor(db: TDatabases){
-    this.prisma = db.getPrismaClient();
+    this.prisma = db.getPrismaService().getPrismaClient();
   }
   async addCart(cart: CartModel): Promise<CartResponse> {
     const newCart =  await this.prisma.cart.create({

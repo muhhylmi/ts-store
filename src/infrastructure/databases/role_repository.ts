@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { RoleModel, RoleResponse } from "../../../domain/model/role_model";
-import IRoleRepo from "../../../domain/repositories/role_repo_int";
-import { HttpException } from "../../../utils/exception";
-import { TDatabases } from "..";
+import { RoleModel, RoleResponse } from "../../domain/model/role_model";
+import IRoleRepo from "../../domain/repositories/role_repo_int";
+import { HttpException } from "../../utils/exception";
+import { TDatabases } from ".";
 
 class RoleRepo implements IRoleRepo {
   private readonly prisma: PrismaClient;
   constructor(db: TDatabases){
-    this.prisma = db.getPrismaClient();
+    this.prisma = db.getPrismaService().getPrismaClient();
   }
   async createRole(role: RoleModel): Promise<RoleResponse> {
     const newRole =  await this.prisma.role.create({

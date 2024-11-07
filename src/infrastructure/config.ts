@@ -8,7 +8,16 @@ const config = {
   BASIC_AUTH_PASSWORD: process.env.BASIC_AUTH_PASSWORD,
   JWTPRIVATEKEY: process.env.JWTPRIVATEKEY || "rahasia",
   MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY || "",
-  MIDTRANS_BASE_URL: process.env.MIDTRANS_BASE_URL || ""
+  MIDTRANS_BASE_URL: process.env.MIDTRANS_BASE_URL || "",
+  ELASTIC_URL: process.env.ELASTIC_URL,
+  PREFIX: process.env.PREFIX,
+  ELASTIC_USERNAME: process.env.ELASTIC_USERNAME || 'elastic',
+  ELASTIC_PASSWORD: process.env.ELASTIC_PASSWORD || 'changeme',
+  ELASTIC_APM_SERVICE_NAME: process.env.ELASTIC_APM_SERVICE_NAME,
+  ELASTIC_APM_SERVER_URL: process.env.ELASTIC_APM_SERVER_URL,
+  NODE_ENV:  process.env.NODE_ENV || 'development',
+  REDIS_URL: process.env.REDIS_URL
+
 };
 
 export default config;

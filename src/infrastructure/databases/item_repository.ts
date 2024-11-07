@@ -1,13 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { ItemModel, ItemResponse } from "../../../domain/model/item_model";
-import IItemRepo from "../../../domain/repositories/item_repo_int";
-import { HttpException } from "../../../utils/exception";
-import { TDatabases } from "..";
+import { ItemModel, ItemResponse } from "../../domain/model/item_model";
+import IItemRepo from "../../domain/repositories/item_repo_int";
+import { HttpException } from "../../utils/exception";
+import { TDatabases } from ".";
 
 class ItemRepo implements IItemRepo {
   private readonly prisma: PrismaClient;
   constructor(db: TDatabases){
-    this.prisma = db.getPrismaClient();
+    this.prisma = db.getPrismaService().getPrismaClient();
   }
 
   async createItem(item: ItemModel): Promise<ItemResponse> {

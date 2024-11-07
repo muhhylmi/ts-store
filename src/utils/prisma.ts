@@ -1,16 +1,14 @@
 import { PrismaClient } from "@prisma/client";
 import { Logging } from "./logger";
-import { TDatabases } from "../infrastructure/databases";
 
-class PrismaService implements TDatabases {
+class PrismaService {
   private prisma: PrismaClient;
   private logger: Logging;
 
   constructor(logger: Logging) {
     this.logger = logger;
-    this.prisma = new PrismaClient({
-      log: ['query', 'info', 'warn', 'error'],
-    });
+    this.prisma = this.init();
+
 
     // Middleware untuk logging query time
     this.prisma.$use(async (params, next) => {
@@ -24,6 +22,12 @@ class PrismaService implements TDatabases {
     });
   }
 
+  init(){
+    return new PrismaClient({
+      log: ['query', 'info', 'warn', 'error'],
+    });
+  }
+
   // Method untuk akses langsung PrismaClient, misal prismaService.client.user.findMany()
   getPrismaClient(): PrismaClient {
     return this.prisma;
@@ -31,8 +35,8 @@ class PrismaService implements TDatabases {
 
   // Menutup koneksi Prisma dengan database
   async disconnect() {
-    await this.prisma.$disconnect();
     this.logger.logInfo('Prisma disconnected');
+    await this.prisma.$disconnect();
   }
 }
 
