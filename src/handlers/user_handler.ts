@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { CreateUserInput, createUserSchema, GetUserInput, LoginInput, loginSchema } from "../domain/model/user_model";
+import { CreateUserInput, createUserSchema, GetUserInput, getUserSchema, LoginInput, loginSchema } from "../domain/model/user_model";
 import { responseSuccess } from "../utils/wrapper";
 import IUserUsecase from "../usecases/user_usercase_int";
 import { validateHandlers } from "../utils/middlewares";
@@ -39,7 +39,7 @@ export class UserHandler {
 
   async getUserById (req: Request, res: Response, next: NextFunction) {
     try {
-      const { success, errors, data } = validateHandlers(createUserSchema, req.params);
+      const { success, errors, data } = validateHandlers(getUserSchema, req.params);
       if (!success) {
         throw new HttpException(400, errors || "Validation Error");
       }      
@@ -52,7 +52,7 @@ export class UserHandler {
 
   async deleteUser (req: Request, res: Response, next: NextFunction) {
     try {
-      const { success, errors, data } = validateHandlers(createUserSchema, req.params);
+      const { success, errors, data } = validateHandlers(getUserSchema, req.params);
       if (!success) {
         throw new HttpException(400, errors || "Validation Error");
       }      

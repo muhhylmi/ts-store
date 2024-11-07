@@ -50,14 +50,7 @@ class UserRepo implements IUserRepo {
       }
     });
     return users.map(user => {
-      return {
-        id: user.id,
-        roleName: user.role.role_name,
-        roleId: user.roleId,
-        username: user.username,
-        created_at: user.createdAt,
-        password: user.password
-      };
+      return toUserResponse(user);
     });
   }
 

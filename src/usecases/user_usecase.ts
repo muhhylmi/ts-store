@@ -36,7 +36,7 @@ class UserUsecase implements IUserUsecase {
 
   async getUser(): Promise<object> {
     const users = await this.repository.getUser();
-    return users;
+    return users.filter((user) => delete user.password);
   }
 
   async getUserById(id: number): Promise<object | null>{
@@ -46,6 +46,7 @@ class UserUsecase implements IUserUsecase {
     if (!user) {
       throw new HttpException(400, 'User Not Found');
     }
+    delete user.password;
     return user;
   }
 
