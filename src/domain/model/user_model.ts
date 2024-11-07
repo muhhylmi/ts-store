@@ -1,3 +1,4 @@
+import { User } from '@prisma/client';
 import { z } from 'zod';
 export interface UserRequest {
     username: string;
@@ -45,3 +46,14 @@ export const getUserSchema = z.object({
   id: z.string().regex(/^\d+$/, "Id must be a number").transform(Number)
 });
 export type GetUserInput = z.infer<typeof getUserSchema>;
+
+export const toUserResponse = (user: User): UserResponse => {
+  return {
+    id: user.id,
+    username: user.username,
+    roleId: user.roleId,
+    password: user.password,
+    is_deleted: user.is_deleted,
+    created_at: user.createdAt
+  };
+};

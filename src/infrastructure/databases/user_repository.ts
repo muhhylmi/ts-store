@@ -1,9 +1,8 @@
 import { PrismaClient, User } from "@prisma/client";
-import { UserModelWithoutId, UserResponse } from "../../domain/model/user_model";
+import { toUserResponse, UserModelWithoutId, UserResponse } from "../../domain/model/user_model";
 import IUserRepo from "../../domain/repositories/user_repo_int";
 import { TDatabases } from ".";
 import RedisService from "../../utils/redis";
-import { toUserResponse } from "../../domain/model/cart_model";
 
 class UserRepo implements IUserRepo {
   private readonly prisma: PrismaClient;
