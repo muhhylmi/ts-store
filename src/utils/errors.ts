@@ -15,4 +15,9 @@ const errorHandler = (
   next();
 };
 
-export default errorHandler;
+const notFoundPath = (req: Request, res: Response) => {
+  responseError(res, 404, 'Route not found');
+};
+const handlerError = { errorHandler, notFoundPath };
+
+export default handlerError;

@@ -24,7 +24,7 @@ class UserUsecase implements IUserUsecase {
       username: user.username
     });
     if (existUser) {
-      this.logger.logError('Username already exists');
+      this.logger.logError("ctx", 'Username already exists');
       throw new HttpException(400,'Username already exists');
     }
     const newUser =  await this.repository.createUser(input);

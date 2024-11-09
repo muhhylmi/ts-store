@@ -1,20 +1,35 @@
 import { createClient, RedisClientType } from 'redis';
 import config from '../infrastructure/config';
 import { Logging } from './logger';
-
+const ctx = "redis";
 class RedisService {
-  private client: RedisClientType;
+  private client!: RedisClientType;
   private logger: Logging;
 
   constructor(logger: Logging) {
     this.logger = logger;
-    this.client = createClient({
-      url: config.REDIS_URL,
-    });;
+    this.initializeRedisClient();
 
     // Error handling
-    this.client.on('error', (err) => logger.logDebug('Redis Client Error ' + err));
-    this.connect().then(() => logger.logDebug('Redis Succesfully conected')).catch(err => logger.logError(err));
+    // this.connect().then(() => logger.logDebug(ctx, 'Redis Succesfully conected')).catch(err => logger.logError(ctx, err));
+  }
+
+  private async initializeRedisClient(): Promise<void> {
+    try {
+      this.client = createClient({ url: config.REDIS_URL });
+
+      // Set up error handling for the Redis client
+      this.client.on('error', (err) => {
+        this.logger.logDebug(`Redis Client Error: ${err}`, ctx);
+        process.exit(1);
+      });
+
+      // Connect to Redis
+      await this.client.connect();
+      this.logger.logDebug('Redis successfully connected', ctx);
+    } catch (error) {
+      this.logger.logError('Failed to connect to Redis ' + error, ctx);
+    }
   }
   
   // Connect to Redis

@@ -22,7 +22,7 @@ class ItemUsecase implements IItemUsecase {
       item_name: item.itemName
     });
     if (existRole) {
-      this.logger.logError('item name already exists');
+      this.logger.logError("ctx", 'item name already exists');
       throw new HttpException(400,'item name already exists');
     }
     const newRole =  await this.repository.createItem(input);

@@ -22,7 +22,7 @@ class RoleUsecase implements IRoleUsecase {
       role_name: role.roleName
     });
     if (existRole) {
-      this.logger.logError('rolename already exists');
+      this.logger.logError("ctx", 'rolename already exists');
       throw new HttpException(400,'rolename already exists');
     }
     const newRole =  await this.repository.createRole(input);

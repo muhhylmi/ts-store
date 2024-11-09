@@ -30,7 +30,7 @@ export class ApiCaller {
       headers: await this.getHeader()
     });
     if (!result.data) {
-      this.logger.logError("Cannot create data from " + this.baseUrl + "/"+ route);
+      this.logger.logError("ctx", "Cannot create data from " + this.baseUrl + "/"+ route);
       throw new HttpException(409, "Cannot create data from " + this.baseUrl + "/"+ route);
     }
     return result.data as ChargeResponse;

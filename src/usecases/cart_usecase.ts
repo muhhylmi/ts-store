@@ -99,7 +99,7 @@ class CartUsecase implements ICartUsecase {
       status: paymentStatus.UNPAID
     });
     if (dataCarts.length === 0) {
-      this.logger.logError('carts is not found');
+      this.logger.logError("ctx", 'carts is not found');
       throw new HttpException(404, 'carts is not found');
     }
     const itemDetails: ItemDetail[] = dataCarts.map((cart) => {

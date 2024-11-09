@@ -49,7 +49,7 @@ export class Logging {
 
   private initLogger(){
     const logger: Logger = createLogger({
-      level: 'debug', // Level log default
+      level: 'debug',
       format: format.combine(
         format.timestamp(), 
         format.printf((info) => {
@@ -57,7 +57,8 @@ export class Logging {
             timestamp: info.timestamp,
             level: info.level,
             message: info.message,
-            file: info.file || '', // Tambahkan file dan line jika ada
+            context: info.context,
+            file: info.file || '', 
             line: info.line || ''
           });
         })
@@ -72,7 +73,7 @@ export class Logging {
     return logger;
   }
 
-  logError = (message: string) => {
+  logError = (context: string, message: string) => {
     const err = new Error();
     Error.captureStackTrace(err);
     const stack = err.stack?.split('\n')[2]; // Ambil lokasi yang benar di stack
@@ -83,15 +84,15 @@ export class Logging {
   
     const file = path.basename(fullFile);
   
-    this.logger.error(message, { file, line });
+    this.logger.error(message, { context, file, line });
   };
 
   logInfo = (message: string) => {
     this.logger.info(message);
   };
 
-  logDebug = (message: string) => {
-    this.logger.debug(message);
+  logDebug = (context: string, message: string) => {
+    this.logger.debug(message, { context });
   };
 
 }
