@@ -30,7 +30,6 @@ class UserResolvers {
         role: user.roleName,
       }));
     } catch (error) {
-      // Handle error appropriately (logging, rethrowing, etc.)
       throw new HttpException(400, 'Failed to fetch users' + error);
     }
   }

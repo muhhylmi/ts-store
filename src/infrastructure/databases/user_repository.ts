@@ -49,7 +49,7 @@ class UserRepo implements IUserRepo {
       }
     });
     return users.map(user => {
-      return toUserResponse(user);
+      return { ...toUserResponse(user), roleName: user.role.role_name };
     });
   }
 
