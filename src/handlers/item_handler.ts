@@ -16,7 +16,7 @@ export class ItemHandler {
 
   async createItem (req: Request, res: Response, next: NextFunction) {
     try {
-      const { success, errors, data } = validateHandlers(createItemSchema, req.body);
+      const { success, errors, data } = validateHandlers(createItemSchema, {...req.body, file: req.file });
       if (!success) {
         throw new HttpException(400, errors || "Validation Error");
       }

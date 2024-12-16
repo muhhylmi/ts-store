@@ -3,6 +3,7 @@ import IItemRepo from "../domain/repositories/item_repo_int";
 import { HttpException } from "../utils/exception";
 import { Logging } from "../utils/logger";
 import IItemUsecase from "./item_usecase_int";
+import fs from 'fs';
 
 
 class ItemUsecase implements IItemUsecase {
@@ -14,21 +15,35 @@ class ItemUsecase implements IItemUsecase {
   }
 
   async createItem(item: CreateItemInput){
-    const input: ItemModel = {
-      item_name: item.itemName,
-      price: item.price
-    };
-    const existRole = await this.repository.findOne({
+    const existItem = await this.repository.findOne({
       item_name: item.itemName
     });
-    if (existRole) {
+    if (existItem) {
+      fs.unlinkSync(item.file.path);
       this.logger.logError("ctx", 'item name already exists');
       throw new HttpException(400,'item name already exists');
     }
-    const newRole =  await this.repository.createItem(input);
-
-    return newRole;
+    try {
+      const result = await this.repository.uploadItemFile(item.file);
+      if (!result) {
+        this.logger.logError("usecase.item_usecase", 'item file upload failed');
+        throw new HttpException(409, "item file upload failed");
+      }
+      const input: ItemModel = {
+        item_name: item.itemName,
+        price: item.price,
+        image: result
+      };
+  
+      const newRole =  await this.repository.createItem(input);
+      return newRole;
+    } catch (error) {
+      this.logger.logError("usecase.item_usecase", error as string);
+      fs.unlinkSync(item.file.path);
+      throw new HttpException(409, error as string);
+    }
   }
+
 
   async getItem(): Promise<object> {
     const items = await this.repository.getItem();

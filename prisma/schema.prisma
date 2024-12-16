@@ -14,11 +14,11 @@ datasource db {
 }
 
 model Role {
-  id Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   visibiltity String[]
-  role_name String @db.VarChar(100)
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
+  role_name   String   @db.VarChar(100)
+  is_deleted  Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
   user User[]
 
@@ -26,27 +26,30 @@ model Role {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  username  String @unique
-  password String  
-  roleId Int
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  username   String   @unique
+  password   String
+  roleId     Int
+  image      String?
+  is_deleted Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
-  role Role @relation(fields: [roleId], references: [id])
-  cart Cart[]
+  role  Role    @relation(fields: [roleId], references: [id])
+  cart  Cart[]
   order Order[]
 
   @@map("users")
 }
 
 model Item {
-  id Int @id @default(autoincrement())
-  item_name String @db.VarChar(200)
-  price Int 
-  
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
+  id          Int     @id @default(autoincrement())
+  item_name   String  @db.VarChar(200)
+  price       Int
+  description String?
+  image       String?
+
+  is_deleted Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   cart Cart[]
 
@@ -54,32 +57,32 @@ model Item {
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
-  status String
-  user_id Int
-  item_id Int
-  count Int
-  order_id String? 
+  id       Int     @id @default(autoincrement())
+  status   String
+  user_id  Int
+  item_id  Int
+  count    Int
+  order_id String?
 
-  
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
+  is_deleted Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
-  item Item @relation(fields: [item_id], references: [id])
-  user User @relation(fields: [user_id], references: [id])
+  item  Item   @relation(fields: [item_id], references: [id])
+  user  User   @relation(fields: [user_id], references: [id])
   order Order? @relation(fields: [order_id], references: [id])
+
   @@map("carts")
 }
 
 model Order {
-  id      String @unique 
+  id      String @unique
   user_id Int
   status  String
 
-  is_deleted Boolean @default(false)
-  createdAt DateTime @default(now())
+  is_deleted Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
-  user User @relation(fields: [user_id], references: [id])
+  user User   @relation(fields: [user_id], references: [id])
   cart Cart[]
 
   @@map("orders")

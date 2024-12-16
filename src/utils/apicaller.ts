@@ -14,6 +14,18 @@ export class ApiCaller {
     this.logger = logger;
   }
 
+  getApiCaller() {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Accept': 'Application/json'
+    };
+    headers.Authorization = 'Basic ' + Buffer.from(this.token + ":").toString('base64');
+    return axios.create({
+      headers,
+      baseURL: this.baseUrl
+    });
+  }
+
   async getHeader(): Promise<RawAxiosRequestHeaders> {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -26,9 +38,7 @@ export class ApiCaller {
   }
 
   async post(route: string, data: MidtransModel): Promise<ChargeResponse> {
-    const result = await axios.post(`${this.baseUrl}/${route}`, data, {
-      headers: await this.getHeader()
-    });
+    const result = await this.getApiCaller().post(`/${route}`, data);
     if (!result.data) {
       this.logger.logError("ctx", "Cannot create data from " + this.baseUrl + "/"+ route);
       throw new HttpException(409, "Cannot create data from " + this.baseUrl + "/"+ route);
@@ -37,9 +47,7 @@ export class ApiCaller {
   }
 
   async get(route: string) {
-    const result = await axios.post(`${this.baseUrl}/${route}`, {
-      headers: await this.getHeader()
-    });
+    const result = await this.getApiCaller().post(`/${route}`);
     return result;
   }
 }

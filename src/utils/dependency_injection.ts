@@ -26,6 +26,7 @@ import { RoleHandler } from '../handlers/role_handler';
 import { Databases, TDatabases } from '../infrastructure/databases';
 import PrismaService from './prisma';
 import RedisService from './redis';
+import { MinioService } from './minio';
 
 // Dependency Injection Container
 class DIContainer {
@@ -95,7 +96,8 @@ class DIContainer {
 export const logger = new Logging();
 const prisma = new PrismaService(logger);
 const redis = new RedisService(logger);
-export const db = new Databases(prisma, redis);
+const minio = new MinioService(logger);
+export const db = new Databases(prisma, redis, minio);
 export const diContainer = new DIContainer(logger, db);
 
 // Export instances
