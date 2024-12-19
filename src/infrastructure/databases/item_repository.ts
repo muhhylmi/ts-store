@@ -24,7 +24,7 @@ class ItemRepo implements IItemRepo {
     return {
       item_name: newItem.item_name,
       id: newItem.id,
-      price: newItem.id,
+      price: newItem.price,
       image: newItem.image || "",
       created_at: newItem.createdAt
     };
@@ -64,15 +64,16 @@ class ItemRepo implements IItemRepo {
     return {
       item_name: item.item_name,
       id: item.id,
+      image: item.image || "",
       price: item.price,
       is_deleted: item.is_deleted,
       created_at: item.createdAt
     };
   }
 
-  async uploadItemFile(file: FileModel): Promise<string | undefined> {
-    await this.minio.uploadToMinio(file);
-    return await this.minio.getPublicUrl(file);  
+  async uploadItemFile(file: FileModel, type: string, folder: string): Promise<string | undefined> {
+    await this.minio.uploadToMinio(file, type, folder);
+    return await this.minio.getPublicUrl(file, type, folder);  
   } 
 
 

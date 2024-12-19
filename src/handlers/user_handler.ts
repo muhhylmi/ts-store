@@ -16,7 +16,7 @@ export class UserHandler {
 
   async createUser (req: Request, res: Response, next: NextFunction) {
     try {
-      const { success, errors, data } = validateHandlers(createUserSchema, req.body);
+      const { success, errors, data } = validateHandlers(createUserSchema, {...req.body, file: req.file });
       if (!success) {
         throw new HttpException(400, errors || "Validation Error");
       }

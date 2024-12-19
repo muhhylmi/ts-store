@@ -5,7 +5,6 @@ import roleRouter from "./role_routes";
 import itemRouter from "./item_routes";
 import cartRouter from "./cart_routes";
 import midtransRouter from "./midtrans";
-import { basicAuthMiddlewareDI } from "../utils/dependency_injection";
 import { expressMiddleware } from '@apollo/server/express4'; 
 import { ApolloServer } from "@apollo/server";
 import handlerError from "../utils/errors";
@@ -23,8 +22,7 @@ const router = async (app: Application, server: ApolloServer, logger: Logging, d
 
   // graphql
   app.use('/graphql', expressMiddleware(server));
-  app.use('/graphql/user', basicAuthMiddlewareDI);
-
+  
   // error handler
   app.use('*', handlerError.notFoundPath);
   app.use(handlerError.errorHandler);

@@ -3,14 +3,18 @@ import { toUserResponse, UserModelWithoutId, UserResponse } from "../../domain/m
 import IUserRepo from "../../domain/repositories/user_repo_int";
 import { TDatabases } from ".";
 import RedisService from "../../utils/redis";
+import { MinioService } from "../../utils/minio";
+import { FileModel } from "../../domain/model/item_model";
 
 class UserRepo implements IUserRepo {
   private readonly prisma: PrismaClient;
   private readonly redis:  RedisService;
+  private readonly minio: MinioService;
 
   constructor(db: TDatabases){
     this.prisma = db.getPrismaService().getPrismaClient();
     this.redis =  db.getRedisService();
+    this.minio = db.getMinioService();
   }
 
   async createUser(user: UserModelWithoutId): Promise<UserResponse> {
@@ -18,13 +22,15 @@ class UserRepo implements IUserRepo {
       data: {
         username: user.username,
         roleId: user.roleId,
-        password: user.password
+        password: user.password,
+        image: user.image
       }
     });
     return {
       id: newUser.id,
       username: newUser.username,
       roleId: newUser.roleId,
+      image: newUser.image || "",
       created_at: newUser.createdAt
     };
   }
@@ -68,6 +74,11 @@ class UserRepo implements IUserRepo {
     }
     this.redis.set(JSON.stringify(query), JSON.stringify(user), 60);
     return toUserResponse(user);
+  }
+
+  async uploadItemFile(file: FileModel, type: string, folder: string): Promise<string | undefined> {
+    await this.minio.uploadToMinio(file, type, folder);
+    return await this.minio.getPublicUrl(file, type, folder);  
   }
 
 }

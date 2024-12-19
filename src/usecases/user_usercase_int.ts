@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-vars */
-import { LoginRequest, UserRequest } from "../domain/model/user_model";
+import { CreateUserInput, LoginRequest } from "../domain/model/user_model";
 
 export default interface IUserUsecase {
-    createUser: (user: UserRequest) => void;
+    createUser: (user: CreateUserInput) => void;
     getUser: () => Promise<object>;
     getUserById: (id: number) => Promise<object | null>;
     deleteUser: (id: number) => void;

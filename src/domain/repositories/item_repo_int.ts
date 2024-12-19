@@ -6,6 +6,6 @@ interface IItemRepo {
     deleteItem: (id: number) => Promise<boolean>;
     getItem: () => Promise<object>;
     findOne: (param:object) => Promise<ItemResponse|null>;
-    uploadItemFile: (file: FileModel) => Promise<string | undefined>;
+    uploadItemFile: (file: FileModel, type: string,folder: string) => Promise<string | undefined>;
 }
 export default IItemRepo;

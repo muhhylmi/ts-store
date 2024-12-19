@@ -41,10 +41,10 @@ export class MinioService {
     }
   };
 
-  async uploadToMinio (file: FileModel) {
+  async uploadToMinio (file: FileModel, type: string, folder: string) {
     const params = {
       Bucket: 'ts-store',
-      Key: file.originalname,
+      Key:  `${type}/${folder}/${file.originalname}`,
       Body: file.path,
       ContentType: file.mimetype,
     };
@@ -61,10 +61,10 @@ export class MinioService {
     }    
   };
 
-  async getPrivateFileUrl(file: FileModel) {
+  async getPrivateFileUrl(file: FileModel, type: string, folder: string) {
     const params = {
       Bucket: 'ts-store',
-      Key: file.originalname,
+      Key: `${type}/${folder}/${file.originalname}`,
       Body: file.path,
       ContentType: file.mimetype,
     };
@@ -77,10 +77,10 @@ export class MinioService {
 
   }
 
-  async getPublicUrl(file: FileModel) {
+  async getPublicUrl(file: FileModel, type: string, folder: string) {
     const params = {
       Bucket: 'ts-store',
-      Key: file.originalname,
+      Key: `${type}/${folder}/${file.originalname}`,
       Body: file.path,
       ContentType: file.mimetype,
     };

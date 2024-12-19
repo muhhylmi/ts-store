@@ -4,7 +4,10 @@ export const userTypeDefs = gql`
   type User {
     id: ID!
     username: String!
-    role: String!
+    roleId: Int!
+    roleName: String!
+    created_at: String!,
+    image: String!
   }
 
   type Query {

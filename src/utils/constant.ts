@@ -1,7 +1,8 @@
 export const paymentStatus = {
   UNPAID: "UNPAID",
   PAID:  "PAID",
-  PENDING: 'pending'
+  PENDING: 'pending',
+  SETTLEMENT: 'settlement'
 };
 export const bankType =  {
   bca: 'bca',

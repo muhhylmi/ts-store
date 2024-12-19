@@ -1,10 +1,11 @@
 // src/routes/helloRoute.ts
 import { Router } from 'express';
 import { basicAuthMiddlewareDI, jwtMiddlewareDI, userHandler } from '../utils/dependency_injection';
+import upload from '../utils/multer';
 
 const userRouter = Router();
 
-userRouter.post('/', basicAuthMiddlewareDI, userHandler.createUser.bind(userHandler));
+userRouter.post('/', basicAuthMiddlewareDI, upload.single('image'), userHandler.createUser.bind(userHandler));
 /**
  * @swagger
  * /api/users:

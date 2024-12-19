@@ -23,7 +23,7 @@ export interface FileModel {
   mimetype: string;
 }
 
-const fileSchema = z.object({
+export const fileSchema = z.object({
   originalname: z.string().regex(/\.(jpg|jpeg|png|pdf)$/i, {
     message: 'Only JPG, PNG, or PDF files are allowed',
   }),

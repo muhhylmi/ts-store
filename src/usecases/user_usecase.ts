@@ -1,4 +1,4 @@
-import { LoginRequest, UserModelWithoutId, UserRequest } from "../domain/model/user_model";
+import { CreateUserInput, LoginRequest, UserModelWithoutId } from "../domain/model/user_model";
 import IUserRepo from "../domain/repositories/user_repo_int";
 import config from "../infrastructure/config";
 import { HttpException } from "../utils/exception";
@@ -6,6 +6,7 @@ import IUserUsecase from "./user_usercase_int";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Logging } from "../utils/logger";
+import fs  from "fs";
 class UserUsecase implements IUserUsecase {
   private readonly repository: IUserRepo;
   private readonly logger: Logging;
@@ -14,7 +15,7 @@ class UserUsecase implements IUserUsecase {
     this.logger = logger;
   }
 
-  async createUser(user: UserRequest){
+  async createUser(user: CreateUserInput){
     const input: UserModelWithoutId = {
       username: user.username,
       password: await bcrypt.hash(user.password, 10),
@@ -24,9 +25,16 @@ class UserUsecase implements IUserUsecase {
       username: user.username
     });
     if (existUser) {
+      fs.unlinkSync(user.file.path);
       this.logger.logError("ctx", 'Username already exists');
       throw new HttpException(400,'Username already exists');
     }
+    const result = await this.repository.uploadItemFile(user.file, 'images', 'users');
+    if (!result) {
+      this.logger.logError("usecase.user_usecase", 'user file upload failed');
+      throw new HttpException(409, "user file upload failed");
+    }
+    input.image = result;
     const newUser =  await this.repository.createUser(input);
     if (newUser.password) {
       delete newUser.password;

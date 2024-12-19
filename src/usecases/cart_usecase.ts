@@ -64,7 +64,9 @@ class CartUsecase implements ICartUsecase {
 
   async getCart(): Promise<object> {
     const carts = await this.repository.getCart({
-      status: paymentStatus.UNPAID
+      status: {
+        not: paymentStatus.PAID
+      }
     });
     return carts;
   }
@@ -136,7 +138,7 @@ class CartUsecase implements ICartUsecase {
       throw new HttpException(409, 'Cannot create order');
     }
     const updateCart = await this.repository.updateMany(carts.cartIds,  {
-      status: paymentStatus.PAID,
+      status: paymentStatus.PENDING,
       order_id: newOrderId
     });
     if (!updateCart) {
@@ -155,6 +157,17 @@ class CartUsecase implements ICartUsecase {
     if (!checkOrder) {
       throw new HttpException(404, 'order is not found');
     }
+    const findCart = await this.repository.getCart({ order_id: order.id });
+    if (order.status === paymentStatus.SETTLEMENT) {
+      const updateCart = await this.repository.updateMany(findCart.map(value => (value.id)),  {
+        status: paymentStatus.PAID,
+        order_id: order.id
+      });
+      if (!updateCart) {
+        throw new HttpException(409, 'Cannot update cart status');
+      }
+    }
+
 
     return await this.orderRepo.updateStatus(order.id, order.status);
   }

@@ -24,7 +24,7 @@ class ItemUsecase implements IItemUsecase {
       throw new HttpException(400,'item name already exists');
     }
     try {
-      const result = await this.repository.uploadItemFile(item.file);
+      const result = await this.repository.uploadItemFile(item.file, 'images', 'items');
       if (!result) {
         this.logger.logError("usecase.item_usecase", 'item file upload failed');
         throw new HttpException(409, "item file upload failed");
@@ -35,8 +35,8 @@ class ItemUsecase implements IItemUsecase {
         image: result
       };
   
-      const newRole =  await this.repository.createItem(input);
-      return newRole;
+      const newItem =  await this.repository.createItem(input);
+      return newItem;
     } catch (error) {
       this.logger.logError("usecase.item_usecase", error as string);
       fs.unlinkSync(item.file.path);

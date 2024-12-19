@@ -21,13 +21,16 @@ class UserResolvers {
     };
   }
 
-  private async getUsers(): Promise<Array<{ id?: number; username?: string; role?: string }>> {
+  private async getUsers(): Promise<UserResponse[]> {
     try {
       const users = await this.userRepo.getUser();
       return users.map((user) => ({
         id: user.id,
         username: user.username,
-        role: user.roleName,
+        image: user.image,
+        created_at: user.created_at,
+        roleId: user.roleId,
+        roleName: user.roleName
       }));
     } catch (error) {
       throw new HttpException(400, 'Failed to fetch users' + error);

@@ -9,6 +9,7 @@ export interface CartResponse {
     count: number;
     price?: number;
     createdAt?: Date;
+    orderId?: string;
     isDeleted?: boolean;
 }
 export interface CartModel {
